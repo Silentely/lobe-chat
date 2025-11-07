@@ -2,6 +2,81 @@
 
 # Changelog
 
+## [Version 2.0.0-next.36](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.35...v2.0.0-next.36)
+
+<sup>Released on **2025-11-07**</sup>
+
+#### ✨ Features
+
+- **misc**: Refactor to use agent runtime as the generation core and support branch mode.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Refactor to use agent runtime as the generation core and support branch mode, closes [#10080](https://github.com/lobehub/lobe-chat/issues/10080) ([b95e741](https://github.com/lobehub/lobe-chat/commit/b95e741))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.35](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.34...v2.0.0-next.35)
+
+<sup>Released on **2025-11-07**</sup>
+
+#### ♻ Code Refactoring
+
+- **misc**: Use react-router-dom change /chat page to spa mode.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **misc**: Use react-router-dom change /chat page to spa mode, closes [#10077](https://github.com/lobehub/lobe-chat/issues/10077) ([9154606](https://github.com/lobehub/lobe-chat/commit/9154606))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.34](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.33...v2.0.0-next.34)
+
+<sup>Released on **2025-11-07**</sup>
+
+#### 💄 Styles
+
+- **misc**: Add sorting functionality for disabled models and model providers with tooltip support.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Add sorting functionality for disabled models and model providers with tooltip support, closes [#10000](https://github.com/lobehub/lobe-chat/issues/10000) ([68e98b1](https://github.com/lobehub/lobe-chat/commit/68e98b1))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.33](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.32...v2.0.0-next.33)
 
 <sup>Released on **2025-11-06**</sup>
