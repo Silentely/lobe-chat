@@ -2,6 +2,56 @@
 
 # Changelog
 
+## [Version 2.0.0-next.62](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.61...v2.0.0-next.62)
+
+<sup>Released on **2025-11-15**</sup>
+
+#### 🐛 Bug Fixes
+
+- **next16**: Resolve 'Response body object should not be disturbed or locked' error.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **next16**: Resolve 'Response body object should not be disturbed or locked' error, closes [#10226](https://github.com/lobehub/lobe-chat/issues/10226) ([caa9c78](https://github.com/lobehub/lobe-chat/commit/caa9c78))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.61](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.60...v2.0.0-next.61)
+
+<sup>Released on **2025-11-15**</sup>
+
+#### 💄 Styles
+
+- **misc**: Update i18n.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Update i18n, closes [#10224](https://github.com/lobehub/lobe-chat/issues/10224) ([ca7551f](https://github.com/lobehub/lobe-chat/commit/ca7551f))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.60](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.59...v2.0.0-next.60)
 
 <sup>Released on **2025-11-14**</sup>
