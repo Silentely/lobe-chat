@@ -2,6 +2,115 @@
 
 # Changelog
 
+## [Version 2.0.0-next.80](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.79...v2.0.0-next.80)
+
+<sup>Released on **2025-11-18**</sup>
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.79](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.78...v2.0.0-next.79)
+
+<sup>Released on **2025-11-18**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fixed the discover page categray sider link error.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fixed the discover page categray sider link error, closes [#10282](https://github.com/lobehub/lobe-chat/issues/10282) ([39e8819](https://github.com/lobehub/lobe-chat/commit/39e8819))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.78](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.77...v2.0.0-next.78)
+
+<sup>Released on **2025-11-18**</sup>
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.77](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.76...v2.0.0-next.77)
+
+<sup>Released on **2025-11-18**</sup>
+
+#### ♻ Code Refactoring
+
+- **misc**: Delete /settings/newapi pages in nextjs build.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **misc**: Delete /settings/newapi pages in nextjs build, closes [#10278](https://github.com/lobehub/lobe-chat/issues/10278) ([9d06753](https://github.com/lobehub/lobe-chat/commit/9d06753))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.76](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.75...v2.0.0-next.76)
+
+<sup>Released on **2025-11-18**</sup>
+
+#### ✨ Features
+
+- **misc**: Support Interleaved thinking in MiniMax.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Support Interleaved thinking in MiniMax, closes [#10255](https://github.com/lobehub/lobe-chat/issues/10255) ([13ca8e1](https://github.com/lobehub/lobe-chat/commit/13ca8e1))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.75](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.74...v2.0.0-next.75)
 
 <sup>Released on **2025-11-18**</sup>
