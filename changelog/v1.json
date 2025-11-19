@@ -1,6 +1,34 @@
 [
   {
     "children": {
+      "improvements": ["Fully support Gemini 3.0 model."]
+    },
+    "date": "2025-11-19",
+    "version": "2.0.0-next.88"
+  },
+  {
+    "children": {
+      "improvements": ["Refactor chat selectors."]
+    },
+    "date": "2025-11-19",
+    "version": "2.0.0-next.87"
+  },
+  {
+    "children": {
+      "features": ["Support user abort in the agent runtime."]
+    },
+    "date": "2025-11-19",
+    "version": "2.0.0-next.86"
+  },
+  {
+    "children": {
+      "fixes": ["Slove discover pagination router."]
+    },
+    "date": "2025-11-19",
+    "version": "2.0.0-next.85"
+  },
+  {
+    "children": {
       "improvements": ["Add Gemini 3.0 Pro Preview to Google Provider."]
     },
     "date": "2025-11-19",
