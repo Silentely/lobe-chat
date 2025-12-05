@@ -1,6 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix, typescript-sort-keys/interface */
 import { createNanoId, idGenerator, serverDB } from '@lobechat/database';
-import { betterAuth } from 'better-auth';
+import { betterAuth } from 'better-auth/minimal';
 import { emailHarmony } from 'better-auth-harmony';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, genericOAuth, magicLink } from 'better-auth/plugins';
@@ -122,6 +122,13 @@ export const auth = betterAuth({
   database: drizzleAdapter(serverDB, {
     provider: 'pg',
   }),
+  /**
+   * Database joins is useful when Better-Auth needs to fetch related data from multiple tables in a single query.
+   * Endpoints like /get-session, /get-full-organization and many others benefit greatly from this feature,
+   * seeing upwards of 2x to 3x performance improvements depending on database latency.
+   * Ref: https://www.better-auth.com/docs/adapters/drizzle#joins-experimental
+   */
+  experimental: { joins: true },
   /**
    * Run user bootstrap for every newly created account (email, magic link, OAuth/social, etc.).
    * Using Better Auth database hooks ensures we catch social flows that bypass /sign-up/* routes.

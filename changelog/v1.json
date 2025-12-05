@@ -1,6 +1,18 @@
 [
   {
     "children": {
+      "features": ["Support klavis mcp connector."]
+    },
+    "date": "2025-12-05",
+    "version": "2.0.0-next.161"
+  },
+  {
+    "children": {},
+    "date": "2025-12-05",
+    "version": "2.0.0-next.160"
+  },
+  {
+    "children": {
       "features": ["Betterauth username signin."]
     },
     "date": "2025-12-04",
