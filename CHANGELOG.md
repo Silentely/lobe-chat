@@ -2,6 +2,108 @@
 
 # Changelog
 
+## [Version 2.0.0-next.209](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.208...v2.0.0-next.209)
+
+<sup>Released on **2026-01-04**</sup>
+
+#### 🐛 Bug Fixes
+
+- **model-runtime**: Handle array content in anthropic assistant messages.
+- **misc**: Use configured embedding provider instead of hardcoded OpenAI.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **model-runtime**: Handle array content in anthropic assistant messages, closes [#11206](https://github.com/lobehub/lobe-chat/issues/11206) ([b03845d](https://github.com/lobehub/lobe-chat/commit/b03845d))
+- **misc**: Use configured embedding provider instead of hardcoded OpenAI, closes [#11133](https://github.com/lobehub/lobe-chat/issues/11133) ([503c3eb](https://github.com/lobehub/lobe-chat/commit/503c3eb))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.208](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.207...v2.0.0-next.208)
+
+<sup>Released on **2026-01-04**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Auto jump to group.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Auto jump to group, closes [#11187](https://github.com/lobehub/lobe-chat/issues/11187) ([e43578a](https://github.com/lobehub/lobe-chat/commit/e43578a))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.207](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.206...v2.0.0-next.207)
+
+<sup>Released on **2026-01-04**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Slove the old agents open profiles error problem.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Slove the old agents open profiles error problem, closes [#11204](https://github.com/lobehub/lobe-chat/issues/11204) ([7d650b6](https://github.com/lobehub/lobe-chat/commit/7d650b6))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.206](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.205...v2.0.0-next.206)
+
+<sup>Released on **2026-01-04**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fix data inconsistency in ai provider config.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fix data inconsistency in ai provider config, closes [#11198](https://github.com/lobehub/lobe-chat/issues/11198) ([f8346f2](https://github.com/lobehub/lobe-chat/commit/f8346f2))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.205](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.204...v2.0.0-next.205)
 
 <sup>Released on **2026-01-04**</sup>
