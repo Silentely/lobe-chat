@@ -1,5 +1,24 @@
 [
   {
+    "children": {},
+    "date": "2026-01-04",
+    "version": "2.0.0-next.205"
+  },
+  {
+    "children": {
+      "features": ["Add new provider Xiaomi MiMo."]
+    },
+    "date": "2026-01-04",
+    "version": "2.0.0-next.204"
+  },
+  {
+    "children": {
+      "improvements": ["Update i18n."]
+    },
+    "date": "2026-01-04",
+    "version": "2.0.0-next.203"
+  },
+  {
     "children": {
       "improvements": ["Refactor and fix model runtime initialize."]
     },
