@@ -2,6 +2,116 @@
 
 # Changelog
 
+## [Version 2.0.0-next.243](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.242...v2.0.0-next.243)
+
+<sup>Released on **2026-01-08**</sup>
+
+#### 🐛 Bug Fixes
+
+- **desktop**: Prevent duplicate CORS headers in response.
+- **InputEditor**: Ensure lexical placeholder reactively updates on locale change.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **desktop**: Prevent duplicate CORS headers in response, closes [#11350](https://github.com/lobehub/lobe-chat/issues/11350) ([57e725c](https://github.com/lobehub/lobe-chat/commit/57e725c))
+- **InputEditor**: Ensure lexical placeholder reactively updates on locale change, closes [#11352](https://github.com/lobehub/lobe-chat/issues/11352) ([72e796b](https://github.com/lobehub/lobe-chat/commit/72e796b))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.242](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.241...v2.0.0-next.242)
+
+<sup>Released on **2026-01-08**</sup>
+
+#### 🐛 Bug Fixes
+
+- **desktop**: Update macOS beta icon size for macOS 26.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **desktop**: Update macOS beta icon size for macOS 26, closes [#11348](https://github.com/lobehub/lobe-chat/issues/11348) ([0d1eedf](https://github.com/lobehub/lobe-chat/commit/0d1eedf))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.241](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.240...v2.0.0-next.241)
+
+<sup>Released on **2026-01-08**</sup>
+
+#### ✨ Features
+
+- **desktop**: Implement history navigation stack.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **desktop**: Implement history navigation stack, closes [#11341](https://github.com/lobehub/lobe-chat/issues/11341) ([db270d5](https://github.com/lobehub/lobe-chat/commit/db270d5))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.240](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.239...v2.0.0-next.240)
+
+<sup>Released on **2026-01-08**</sup>
+
+#### ♻ Code Refactoring
+
+- **memory-user-memory**: Migrated to use typescript module for prompts.
+
+#### ✨ Features
+
+- **notebook**: Add i18n, Inspector and Streaming components.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **memory-user-memory**: Migrated to use typescript module for prompts, closes [#11344](https://github.com/lobehub/lobe-chat/issues/11344) ([902cfe5](https://github.com/lobehub/lobe-chat/commit/902cfe5))
+
+#### What's improved
+
+- **notebook**: Add i18n, Inspector and Streaming components, closes [#11212](https://github.com/lobehub/lobe-chat/issues/11212) ([f7dc54f](https://github.com/lobehub/lobe-chat/commit/f7dc54f))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.239](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.238...v2.0.0-next.239)
 
 <sup>Released on **2026-01-08**</sup>

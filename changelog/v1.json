@@ -1,5 +1,25 @@
 [
   {
+    "children": {},
+    "date": "2026-01-08",
+    "version": "2.0.0-next.243"
+  },
+  {
+    "children": {},
+    "date": "2026-01-08",
+    "version": "2.0.0-next.242"
+  },
+  {
+    "children": {},
+    "date": "2026-01-08",
+    "version": "2.0.0-next.241"
+  },
+  {
+    "children": {},
+    "date": "2026-01-08",
+    "version": "2.0.0-next.240"
+  },
+  {
     "children": {
       "features": ["Add the twitter lobehub skill."]
     },
