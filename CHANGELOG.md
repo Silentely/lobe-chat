@@ -2,6 +2,106 @@
 
 # Changelog
 
+## [Version 2.0.0-next.252](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.251...v2.0.0-next.252)
+
+<sup>Released on **2026-01-09**</sup>
+
+#### ✨ Features
+
+- **misc**: Add the agent cron job.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Add the agent cron job, closes [#11370](https://github.com/lobehub/lobe-chat/issues/11370) ([10e47d9](https://github.com/lobehub/lobe-chat/commit/10e47d9))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.251](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.250...v2.0.0-next.251)
+
+<sup>Released on **2026-01-09**</sup>
+
+#### ✨ Features
+
+- **community**: Support to report for agent & mcp plugin interaction for recommendation.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **community**: Support to report for agent & mcp plugin interaction for recommendation, closes [#11289](https://github.com/lobehub/lobe-chat/issues/11289) ([6f98792](https://github.com/lobehub/lobe-chat/commit/6f98792))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.250](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.249...v2.0.0-next.250)
+
+<sup>Released on **2026-01-09**</sup>
+
+#### ✨ Features
+
+- **community**: Recommended for home & added discover tab.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **community**: Recommended for home & added discover tab, closes [#11290](https://github.com/lobehub/lobe-chat/issues/11290) ([8db248c](https://github.com/lobehub/lobe-chat/commit/8db248c))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.249](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.248...v2.0.0-next.249)
+
+<sup>Released on **2026-01-09**</sup>
+
+#### 💄 Styles
+
+- **misc**: Force gpt-5.2 use response api.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Styles
+
+- **misc**: Force gpt-5.2 use response api, closes [#11373](https://github.com/lobehub/lobe-chat/issues/11373) ([f7f3631](https://github.com/lobehub/lobe-chat/commit/f7f3631))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.248](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.247...v2.0.0-next.248)
 
 <sup>Released on **2026-01-09**</sup>
