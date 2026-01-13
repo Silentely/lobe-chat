@@ -2,6 +2,99 @@
 
 # Changelog
 
+## [Version 2.0.0-next.278](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.277...v2.0.0-next.278)
+
+<sup>Released on **2026-01-13**</sup>
+
+#### ✨ Features
+
+- **share**: Add topic sharing functionality.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **share**: Add topic sharing functionality, closes [#11448](https://github.com/lobehub/lobe-chat/issues/11448) ([ddca165](https://github.com/lobehub/lobe-chat/commit/ddca165))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.277](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.276...v2.0.0-next.277)
+
+<sup>Released on **2026-01-13**</sup>
+
+#### ✨ Features
+
+- **misc**: Update the community user layout action button, update the cron job visiual way.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Update the community user layout action button, closes [#11472](https://github.com/lobehub/lobe-chat/issues/11472) ([2dd6d42](https://github.com/lobehub/lobe-chat/commit/2dd6d42))
+- **misc**: Update the cron job visiual way, closes [#11466](https://github.com/lobehub/lobe-chat/issues/11466) ([63d81de](https://github.com/lobehub/lobe-chat/commit/63d81de))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.276](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.275...v2.0.0-next.276)
+
+<sup>Released on **2026-01-13**</sup>
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.275](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.274...v2.0.0-next.275)
+
+<sup>Released on **2026-01-13**</sup>
+
+#### ✨ Features
+
+- **misc**: Improve PageEditor header UX with DropdownMenu and i18n support.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Improve PageEditor header UX with DropdownMenu and i18n support, closes [#11462](https://github.com/lobehub/lobe-chat/issues/11462) ([ae499c9](https://github.com/lobehub/lobe-chat/commit/ae499c9))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.274](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.273...v2.0.0-next.274)
 
 <sup>Released on **2026-01-13**</sup>
