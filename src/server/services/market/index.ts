@@ -281,6 +281,19 @@ export class MarketService {
   }
 
   /**
+   * Export file from sandbox to upload URL
+   */
+  async exportFile(params: { path: string; topicId: string; uploadUrl: string; userId: string }) {
+    const { path, uploadUrl, topicId, userId } = params;
+
+    return this.market.plugins.runBuildInTool(
+      'exportFile',
+      { path, uploadUrl },
+      { topicId, userId },
+    );
+  }
+
+  /**
    * Get plugin manifest
    */
   async getPluginManifest(params: {
@@ -366,6 +379,13 @@ export class MarketService {
    */
   async getUserProfile(username: string, options?: { locale?: string }) {
     return this.market.user.getUserInfo(username, options);
+  }
+
+  /**
+   * Register user on market and optionally follow another user
+   */
+  async registerUser(params: { followUserId?: string; registerUserId: string }): Promise<void> {
+    await this.market.user.register(params);
   }
 
   // ============================== Skills Methods ==============================
