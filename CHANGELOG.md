@@ -2,6 +2,114 @@
 
 # Changelog
 
+## [Version 2.0.0-next.328](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.327...v2.0.0-next.328)
+
+<sup>Released on **2026-01-20**</sup>
+
+#### ✨ Features
+
+- **misc**: Support client tasks mode.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Support client tasks mode, closes [#11666](https://github.com/lobehub/lobe-chat/issues/11666) ([98cf57b](https://github.com/lobehub/lobe-chat/commit/98cf57b))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.327](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.326...v2.0.0-next.327)
+
+<sup>Released on **2026-01-20**</sup>
+
+#### ♻ Code Refactoring
+
+- **model-select**: Migrate FunctionCallingModelSelect to LobeSelect.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **model-select**: Migrate FunctionCallingModelSelect to LobeSelect, closes [#11664](https://github.com/lobehub/lobe-chat/issues/11664) ([ad51305](https://github.com/lobehub/lobe-chat/commit/ad51305))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.326](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.325...v2.0.0-next.326)
+
+<sup>Released on **2026-01-20**</sup>
+
+#### 🐛 Bug Fixes
+
+- **desktop**: Gracefully handle missing update manifest 404 errors.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **desktop**: Gracefully handle missing update manifest 404 errors, closes [#11625](https://github.com/lobehub/lobe-chat/issues/11625) ([13e95b9](https://github.com/lobehub/lobe-chat/commit/13e95b9))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.325](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.324...v2.0.0-next.325)
+
+<sup>Released on **2026-01-20**</sup>
+
+#### ♻ Code Refactoring
+
+- **ModelSwitchPanel**: Migrate from Popover to DropdownMenu with virtual scrolling.
+
+#### 🐛 Bug Fixes
+
+- **sidebar-drawer**: Fix drawer positioning and title style.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **ModelSwitchPanel**: Migrate from Popover to DropdownMenu with virtual scrolling, closes [#11663](https://github.com/lobehub/lobe-chat/issues/11663) ([c9d9dff](https://github.com/lobehub/lobe-chat/commit/c9d9dff))
+
+#### What's fixed
+
+- **sidebar-drawer**: Fix drawer positioning and title style, closes [#11655](https://github.com/lobehub/lobe-chat/issues/11655) ([cf5320e](https://github.com/lobehub/lobe-chat/commit/cf5320e))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.324](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.323...v2.0.0-next.324)
 
 <sup>Released on **2026-01-20**</sup>
