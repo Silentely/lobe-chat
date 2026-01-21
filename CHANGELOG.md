@@ -2,6 +2,89 @@
 
 # Changelog
 
+## [Version 2.0.0-next.331](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.330...v2.0.0-next.331)
+
+<sup>Released on **2026-01-21**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Slove the agent group editor not focus in editdata area.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Slove the agent group editor not focus in editdata area, closes [#11677](https://github.com/lobehub/lobe-chat/issues/11677) ([9ac84e6](https://github.com/lobehub/lobe-chat/commit/9ac84e6))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.330](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.329...v2.0.0-next.330)
+
+<sup>Released on **2026-01-21**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fix multi agent tasks issue.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fix multi agent tasks issue, closes [#11672](https://github.com/lobehub/lobe-chat/issues/11672) ([9de773b](https://github.com/lobehub/lobe-chat/commit/9de773b))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.329](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.328...v2.0.0-next.329)
+
+<sup>Released on **2026-01-21**</sup>
+
+#### ♻ Code Refactoring
+
+- **auth**: Remove NEXT_PUBLIC_AUTH_URL env variable.
+
+#### 🐛 Bug Fixes
+
+- **misc**: Sloved the old removeSessionTopics not work.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **auth**: Remove NEXT_PUBLIC_AUTH_URL env variable, closes [#11658](https://github.com/lobehub/lobe-chat/issues/11658) ([c0f9875](https://github.com/lobehub/lobe-chat/commit/c0f9875))
+
+#### What's fixed
+
+- **misc**: Sloved the old removeSessionTopics not work, closes [#11671](https://github.com/lobehub/lobe-chat/issues/11671) ([06d41e5](https://github.com/lobehub/lobe-chat/commit/06d41e5))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.328](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.327...v2.0.0-next.328)
 
 <sup>Released on **2026-01-20**</sup>
