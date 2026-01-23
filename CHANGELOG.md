@@ -2,6 +2,130 @@
 
 # Changelog
 
+## [Version 2.0.0-next.347](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.346...v2.0.0-next.347)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Add advace config back in agent/group profiles.
+
+#### 💄 Styles
+
+- **misc**: Move plugin store button outside scroll container.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Add advace config back in agent/group profiles, closes [#11727](https://github.com/lobehub/lobe-chat/issues/11727) ([403175f](https://github.com/lobehub/lobe-chat/commit/403175f))
+
+#### Styles
+
+- **misc**: Move plugin store button outside scroll container, closes [#11728](https://github.com/lobehub/lobe-chat/issues/11728) ([c484d1a](https://github.com/lobehub/lobe-chat/commit/c484d1a))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.346](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.345...v2.0.0-next.346)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### 🐛 Bug Fixes
+
+- **pdf**: Upgrade pdfjs-dist and react-pdf to v5.x.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **pdf**: Upgrade pdfjs-dist and react-pdf to v5.x, closes [#11686](https://github.com/lobehub/lobe-chat/issues/11686) ([2b620df](https://github.com/lobehub/lobe-chat/commit/2b620df))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.345](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.344...v2.0.0-next.345)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### ✨ Features
+
+- **misc**: Remove Clerk authentication code.
+
+#### 🐛 Bug Fixes
+
+- **misc**: Slove the agents header switch agents the lobeAI not show problem.
+
+#### 💄 Styles
+
+- **misc**: Improve auto scroll and group profile.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **misc**: Remove Clerk authentication code, closes [#11711](https://github.com/lobehub/lobe-chat/issues/11711) ([395595a](https://github.com/lobehub/lobe-chat/commit/395595a))
+
+#### What's fixed
+
+- **misc**: Slove the agents header switch agents the lobeAI not show problem, closes [#11726](https://github.com/lobehub/lobe-chat/issues/11726) ([f45f508](https://github.com/lobehub/lobe-chat/commit/f45f508))
+
+#### Styles
+
+- **misc**: Improve auto scroll and group profile, closes [#11725](https://github.com/lobehub/lobe-chat/issues/11725) ([550acc2](https://github.com/lobehub/lobe-chat/commit/550acc2))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.344](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.343...v2.0.0-next.344)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fixed the sandbox tools call when error should use right callback.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fixed the sandbox tools call when error should use right callback, closes [#11721](https://github.com/lobehub/lobe-chat/issues/11721) ([e8fce68](https://github.com/lobehub/lobe-chat/commit/e8fce68))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.343](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.342...v2.0.0-next.343)
 
 <sup>Released on **2026-01-23**</sup>
