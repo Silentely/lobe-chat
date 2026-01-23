@@ -2,6 +2,184 @@
 
 # Changelog
 
+## [Version 2.0.0-next.354](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.353...v2.0.0-next.354)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### ♻ Code Refactoring
+
+- **misc**: Migrate AI Rules to Claude Code Skills.
+
+#### 🐛 Bug Fixes
+
+- **pdf**: Ensure worker config before Document render.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### Code refactoring
+
+- **misc**: Migrate AI Rules to Claude Code Skills, closes [#11737](https://github.com/lobehub/lobe-chat/issues/11737) ([346fc46](https://github.com/lobehub/lobe-chat/commit/346fc46))
+
+#### What's fixed
+
+- **pdf**: Ensure worker config before Document render, closes [#11746](https://github.com/lobehub/lobe-chat/issues/11746) ([ad34072](https://github.com/lobehub/lobe-chat/commit/ad34072))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.353](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.352...v2.0.0-next.353)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### ✨ Features
+
+- **database**: Extended async task with metadata and parent id, added index.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's improved
+
+- **database**: Extended async task with metadata and parent id, added index, closes [#11712](https://github.com/lobehub/lobe-chat/issues/11712) ([31d2f26](https://github.com/lobehub/lobe-chat/commit/31d2f26))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.352](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.351...v2.0.0-next.352)
+
+<sup>Released on **2026-01-23**</sup>
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.351](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.350...v2.0.0-next.351)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: Fix auto scroll.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: Fix auto scroll, closes [#11734](https://github.com/lobehub/lobe-chat/issues/11734) ([892fa9f](https://github.com/lobehub/lobe-chat/commit/892fa9f))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.350](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.349...v2.0.0-next.350)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### 🐛 Bug Fixes
+
+- **ModelSelect**: Resolve tooltip hover causing popup to close.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **ModelSelect**: Resolve tooltip hover causing popup to close, closes [#11742](https://github.com/lobehub/lobe-chat/issues/11742) ([1b73f14](https://github.com/lobehub/lobe-chat/commit/1b73f14))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.349](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.348...v2.0.0-next.349)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### 🐛 Bug Fixes
+
+- **misc**: When use market group, the group sys role was not used.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **misc**: When use market group, the group sys role was not used, closes [#11739](https://github.com/lobehub/lobe-chat/issues/11739) ([afc76f9](https://github.com/lobehub/lobe-chat/commit/afc76f9))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
+## [Version 2.0.0-next.348](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.347...v2.0.0-next.348)
+
+<sup>Released on **2026-01-23**</sup>
+
+#### 🐛 Bug Fixes
+
+- **copilot**: History popover not refreshing when agentId changes.
+- **misc**: Fixed the agent group builder tools excaution edge case crash, fixed the group topic copy not right.
+
+<br/>
+
+<details>
+<summary><kbd>Improvements and Fixes</kbd></summary>
+
+#### What's fixed
+
+- **copilot**: History popover not refreshing when agentId changes, closes [#11731](https://github.com/lobehub/lobe-chat/issues/11731) ([64f39e7](https://github.com/lobehub/lobe-chat/commit/64f39e7))
+- **misc**: Fixed the agent group builder tools excaution edge case crash, closes [#11735](https://github.com/lobehub/lobe-chat/issues/11735) ([5de4742](https://github.com/lobehub/lobe-chat/commit/5de4742))
+- **misc**: Fixed the group topic copy not right, closes [#11730](https://github.com/lobehub/lobe-chat/issues/11730) ([282c1fb](https://github.com/lobehub/lobe-chat/commit/282c1fb))
+
+</details>
+
+<div align="right">
+
+[![](https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square)](#readme-top)
+
+</div>
+
 ## [Version 2.0.0-next.347](https://github.com/lobehub/lobe-chat/compare/v2.0.0-next.346...v2.0.0-next.347)
 
 <sup>Released on **2026-01-23**</sup>
