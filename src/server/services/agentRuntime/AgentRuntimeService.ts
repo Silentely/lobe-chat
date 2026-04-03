@@ -15,7 +15,6 @@ import { type RuntimeExecutorContext } from '@/server/modules/AgentRuntime/Runti
 import { createRuntimeExecutors } from '@/server/modules/AgentRuntime/RuntimeExecutors';
 import { type IStreamEventManager } from '@/server/modules/AgentRuntime/types';
 import { mcpService } from '@/server/services/mcp';
-import { PluginGatewayService } from '@/server/services/pluginGateway';
 import { QueueService } from '@/server/services/queue';
 import { LocalQueueServiceImpl } from '@/server/services/queue/impls';
 import { ToolExecutionService } from '@/server/services/toolExecution';
@@ -160,13 +159,11 @@ export class AgentRuntimeService {
     this.messageModel = new MessageModel(db, this.userId);
 
     // Initialize ToolExecutionService with dependencies
-    const pluginGatewayService = new PluginGatewayService();
     const builtinToolsExecutor = new BuiltinToolsExecutor(db, userId);
 
     this.toolExecutionService = new ToolExecutionService({
       builtinToolsExecutor,
       mcpService,
-      pluginGatewayService,
     });
 
     // Setup local execution callback for LocalQueueServiceImpl
@@ -268,6 +265,8 @@ export class AgentRuntimeService {
       userInterventionConfig,
       completionWebhook,
       stepWebhook,
+      queueRetries,
+      queueRetryDelay,
       webhookDelivery,
       botPlatformContext,
       discordContext,
@@ -278,6 +277,7 @@ export class AgentRuntimeService {
       operationSkillSet,
       signal,
       userTimezone,
+      initialStepCount = 0,
     } = params;
 
     const operationToolSet = toolSet;
@@ -321,6 +321,8 @@ export class AgentRuntimeService {
           evalContext,
           // need be removed
           modelRuntimeConfig,
+          queueRetries,
+          queueRetryDelay,
           stepWebhook,
           stream,
           operationSkillSet,
@@ -337,7 +339,7 @@ export class AgentRuntimeService {
         operationId,
         operationToolSet,
         status: 'idle',
-        stepCount: 0,
+        stepCount: initialStepCount,
         // Backward-compat: resolved tool fields read by RuntimeExecutors
         toolManifestMap: operationToolSet.manifestMap,
         toolSourceMap: operationToolSet.sourceMap,
@@ -399,7 +401,9 @@ export class AgentRuntimeService {
           endpoint: `${this.baseURL}/run`,
           operationId,
           priority: 'high',
-          stepIndex: 0,
+          retryDelay: queueRetryDelay,
+          retries: queueRetries,
+          stepIndex: initialStepCount,
         });
         autoStarted = true;
         log('[%s] Scheduled first step (messageId: %s)', operationId, messageId);
@@ -441,8 +445,15 @@ export class AgentRuntimeService {
    * Execute Agent step
    */
   async executeStep(params: AgentExecutionParams): Promise<AgentExecutionResult> {
-    const { operationId, stepIndex, context, humanInput, approvedToolCall, rejectionReason } =
-      params;
+    const {
+      operationId,
+      stepIndex,
+      context,
+      humanInput,
+      approvedToolCall,
+      rejectionReason,
+      externalRetryCount = 0,
+    } = params;
 
     const callbacks = this.getStepCallbacks(operationId);
 
@@ -478,6 +489,11 @@ export class AgentRuntimeService {
       if (!agentState) {
         throw new Error(`Agent state not found for operation ${operationId}`);
       }
+
+      agentState.metadata = {
+        ...agentState.metadata,
+        externalRetryCount,
+      };
 
       // Layer 2 defense: catch extremely delayed retries that arrive after lock TTL expired
       if (agentState.stepCount > stepIndex) {
@@ -924,6 +940,7 @@ export class AgentRuntimeService {
               stepContext: currentContext?.stepContext,
             },
             events: snapshotEvents,
+            externalRetryCount,
             executionTimeMs: stepPresentationData.executionTimeMs,
             inputTokens: stepPresentationData.stepInputTokens,
             isCompressionReset: isCompression || undefined,
@@ -989,6 +1006,14 @@ export class AgentRuntimeService {
           endpoint: `${this.baseURL}/run`,
           operationId,
           priority,
+          retryDelay:
+            typeof stepResult.newState.metadata?.queueRetryDelay === 'string'
+              ? stepResult.newState.metadata.queueRetryDelay
+              : undefined,
+          retries:
+            typeof stepResult.newState.metadata?.queueRetries === 'number'
+              ? stepResult.newState.metadata.queueRetries
+              : undefined,
           stepIndex: nextStepIndex,
         });
         nextStepScheduled = true;
@@ -1043,6 +1068,10 @@ export class AgentRuntimeService {
                 model: partial.model,
                 operationId,
                 provider: partial.provider,
+                retryDelayExpression:
+                  typeof metadata?.queueRetryDelay === 'string'
+                    ? metadata.queueRetryDelay
+                    : undefined,
                 startedAt: partial.startedAt ?? Date.now(),
                 steps: (partial.steps ?? []).sort((a, b) => a.stepIndex - b.stepIndex),
                 totalCost: stepResult.newState.cost?.total ?? 0,
@@ -1051,6 +1080,10 @@ export class AgentRuntimeService {
                 topicId: metadata?.topicId,
                 traceId: operationId,
                 userId: metadata?.userId,
+                externalRetryCount:
+                  typeof metadata?.externalRetryCount === 'number'
+                    ? metadata.externalRetryCount
+                    : undefined,
               };
 
               await this.snapshotStore.save(snapshot as any);
@@ -1100,6 +1133,10 @@ export class AgentRuntimeService {
         finalStateWithError = {
           ...errorState!,
           error: formattedError,
+          metadata: {
+            ...errorState?.metadata,
+            externalRetryCount,
+          },
           status: 'error' as const,
           stepCount: errorState?.stepCount ?? stepIndex,
         };
@@ -1108,6 +1145,7 @@ export class AgentRuntimeService {
         // Fallback: construct a minimal error state so callbacks still receive useful info
         finalStateWithError = {
           error: formattedError,
+          metadata: { externalRetryCount },
           status: 'error' as const,
           stepCount: stepIndex,
         };
@@ -1503,6 +1541,7 @@ export class AgentRuntimeService {
       discordContext: metadata?.discordContext,
       userTimezone: metadata?.userTimezone,
       evalContext: metadata?.evalContext,
+      loadAgentState: this.coordinator.loadAgentState.bind(this.coordinator),
       messageModel: this.messageModel,
       operationId,
       serverDB: this.serverDB,
