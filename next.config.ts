@@ -18,19 +18,7 @@ const vercelConfig = {
     ],
   },
 };
-
 const nextConfig = defineConfig({
-  swcMinify: true,
-  productionBrowserSourceMaps: false,
-
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-
   ...(isVercel ? vercelConfig : {}),
 });
 
