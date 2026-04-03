@@ -35,17 +35,4 @@ const nextConfig = defineConfig({
   ...(isVercel ? vercelConfig : {}),
 });
 
-module.exports = {
-  swcMinify: true,
-  productionBrowserSourceMaps: false,
-
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
-  typescript: {
-    ignoreBuildErrors: true,
-  }
-}```
-
 export default nextConfig;
