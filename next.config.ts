@@ -11,7 +11,7 @@ const vercelConfig = {
       'node_modules/.pnpm/@napi-rs+canvas-*-musl*',
       'node_modules/.pnpm/@img+sharp-libvips-*musl*',
       // Exclude SPA/desktop/mobile build artifacts from serverless functions
-      'public/spa/**',
+      'public/_spa/**',
       'dist/desktop/**',
       'dist/mobile/**',
       'apps/desktop/**',
@@ -19,19 +19,7 @@ const vercelConfig = {
     ],
   },
 };
-
 const nextConfig = defineConfig({
-  swcMinify: true,
-  productionBrowserSourceMaps: false,
-
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-
   ...(isVercel ? vercelConfig : {}),
 });
 
