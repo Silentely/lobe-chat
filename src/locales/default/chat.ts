@@ -27,6 +27,12 @@ export default {
   'agentDefaultMessageWithoutEdit':
     "Hi, I’m **{{name}}**. One sentence is enough—you're in control.",
   'agents': 'Agents',
+  /**
+   * Sidebar tag for agents driven by an external CLI runtime (Claude Code, etc.).
+   * Deliberately separate from `group.profile.external` so it can evolve
+   * independently (e.g. swap to "Claude Code" per provider later).
+   */
+  'agentSidebar.externalTag': 'External',
   'artifact.generating': 'Generating',
   'artifact.inThread':
     'Cannot view in subtopic, please switch to the main conversation area to open',
@@ -242,6 +248,7 @@ export default {
   'createModal.placeholder': 'Describe what your agent should do...',
   'createModal.title': 'What should your agent do?',
   'newAgent': 'Create Agent',
+  'newClaudeCodeAgent': 'Claude Code Agent',
   'newGroupChat': 'Create Group',
   'newPage': 'Create Page',
   'noAgentsYet': 'This group has no members yet. Click the + button to invite agents.',
@@ -253,6 +260,7 @@ export default {
   'operation.contextCompression': 'Context too long, compressing history...',
   'operation.execAgentRuntime': 'Preparing response',
   'operation.execClientTask': 'Executing task',
+  'operation.execHeterogeneousAgent': 'External agent running',
   'operation.execServerAgentRuntime':
     'Task is running in the server. You are safe to leave this page',
   'operation.sendMessage': 'Sending message',
@@ -452,6 +460,17 @@ export default {
   'tool.intervention.mode.autoRunDesc': 'Automatically approve all tool executions',
   'tool.intervention.mode.manual': 'Manual',
   'tool.intervention.mode.manualDesc': 'Manual approval required for each invocation',
+  'tool.intervention.onboarding.agentIdentity.applyHint':
+    'The new identity will appear after approval.',
+  'tool.intervention.onboarding.agentIdentity.description':
+    'Approving this change updates the Agent shown in Inbox and in this onboarding conversation.',
+  'tool.intervention.onboarding.agentIdentity.emoji': 'Agent avatar',
+  'tool.intervention.onboarding.agentIdentity.eyebrow': 'Onboarding approval',
+  'tool.intervention.onboarding.agentIdentity.name': 'Agent name',
+  'tool.intervention.onboarding.agentIdentity.targetInbox': 'Inbox Agent',
+  'tool.intervention.onboarding.agentIdentity.targetOnboarding': 'Current onboarding Agent',
+  'tool.intervention.onboarding.agentIdentity.targets': 'Applies to',
+  'tool.intervention.onboarding.agentIdentity.title': 'Confirm Agent identity update',
   'tool.intervention.reject': 'Reject',
   'tool.intervention.rejectAndContinue': 'Reject and Retry',
   'tool.intervention.rejectOnly': 'Reject',
