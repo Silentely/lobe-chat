@@ -1,9 +1,10 @@
 import { Flexbox, Icon, Skeleton, Tag } from '@lobehub/ui';
-import { createStaticStyles, cssVar, keyframes } from 'antd-style';
+import { createStaticStyles, cssVar, keyframes, useTheme } from 'antd-style';
 import { HashIcon, MessageSquareDashed } from 'lucide-react';
 import { memo, Suspense, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import DotsLoading from '@/components/DotsLoading';
 import RingLoadingIcon from '@/components/RingLoading';
 import { isDesktop } from '@/const/version';
 import { pluginRegistry } from '@/features/Electron/titlebar/RecentlyViewed/plugins';
@@ -80,8 +81,13 @@ interface TopicItemProps {
 
 const TopicItem = memo<TopicItemProps>(({ id, title, fav, active, threadId, metadata }) => {
   const { t } = useTranslation('topic');
+  const { isDarkMode } = useTheme();
   const activeAgentId = useAgentStore((s) => s.activeAgentId);
   const addTab = useElectronStore((s) => s.addTab);
+
+  const loadingRingColor = isDarkMode
+    ? cssVar.colorWarningBorder
+    : `color-mix(in srgb, ${cssVar.colorWarning} 45%, transparent)`;
 
   // Construct href for cmd+click support
   const href = useMemo(() => {
@@ -137,7 +143,7 @@ const TopicItem = memo<TopicItemProps>(({ id, title, fav, active, threadId, meta
   const { dropdownMenu } = useTopicItemDropdownMenu({
     fav,
     id,
-    toggleEditing,
+    title,
   });
 
   const hasUnread = id && isUnreadCompleted;
@@ -156,7 +162,7 @@ const TopicItem = memo<TopicItemProps>(({ id, title, fav, active, threadId, meta
         icon={
           isLoading ? (
             <RingLoadingIcon
-              ringColor={cssVar.colorWarningBorder}
+              ringColor={loadingRingColor}
               size={14}
               style={{ color: cssVar.colorWarning }}
             />
@@ -191,12 +197,12 @@ const TopicItem = memo<TopicItemProps>(({ id, title, fav, active, threadId, meta
         contextMenuItems={dropdownMenu}
         disabled={editing}
         href={href}
-        title={title}
+        title={title === '...' ? <DotsLoading gap={3} size={4} /> : title}
         icon={(() => {
           if (isLoading) {
             return (
               <RingLoadingIcon
-                ringColor={cssVar.colorWarningBorder}
+                ringColor={loadingRingColor}
                 size={14}
                 style={{ color: cssVar.colorWarning }}
               />
