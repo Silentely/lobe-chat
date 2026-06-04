@@ -25,6 +25,7 @@ import { createdAt, timestamps, timestamptz } from './_helpers';
 import { agents } from './agent';
 import { topics } from './topic';
 import { users } from './user';
+import { workspaces } from './workspace';
 
 const evalModes = [
   'equals',
@@ -68,6 +69,7 @@ export const agentEvalBenchmarks = pgTable(
     metadata: jsonb('metadata').$type<Record<string, unknown>>(),
 
     userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     isSystem: boolean('is_system').default(true).notNull(),
 
@@ -94,6 +96,7 @@ export const agentEvalExperiments = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     name: text('name').notNull(),
     description: text('description'),
@@ -123,6 +126,7 @@ export const agentEvalExperimentBenchmarks = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     createdAt: createdAt(),
   },
@@ -157,6 +161,7 @@ export const agentEvalDatasets = pgTable(
     identifier: text('identifier').notNull(),
 
     userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     name: text('name').notNull(),
     description: text('description'),
@@ -192,6 +197,7 @@ export const agentEvalTestCases = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     datasetId: text('dataset_id')
       .references(() => agentEvalDatasets.id, { onDelete: 'cascade' })
@@ -241,6 +247,7 @@ export const agentEvalRuns = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     name: text('name'),
 
@@ -285,6 +292,7 @@ export const agentEvalRunTopics = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     runId: text('run_id')
       .references(() => agentEvalRuns.id, { onDelete: 'cascade' })

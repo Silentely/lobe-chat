@@ -21,6 +21,7 @@ import { chunks, documentChunks, unstructuredChunks } from './rag';
 import { sessionGroups, sessions } from './session';
 import { threads, topicDocuments, topics } from './topic';
 import { users } from './user';
+import { workspaces } from './workspace';
 
 export const agentsToSessions = pgTable(
   'agents_to_sessions',
@@ -34,6 +35,7 @@ export const agentsToSessions = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
   },
   (t) => [
     primaryKey({ columns: [t.agentId, t.sessionId] }),
@@ -55,6 +57,7 @@ export const filesToSessions = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.fileId, t.sessionId] }),
@@ -73,6 +76,7 @@ export const fileChunks = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.fileId, t.chunkId] }),

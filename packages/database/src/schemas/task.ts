@@ -17,6 +17,7 @@ import { agentCronJobs } from './agentCronJob';
 import { documents } from './file';
 import { topics } from './topic';
 import { users } from './user';
+import { workspaces } from './workspace';
 
 // ── Tasks ────────────────────────────────────────────────
 
@@ -35,6 +36,7 @@ export const tasks = pgTable(
     createdByUserId: text('created_by_user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
     createdByAgentId: text('created_by_agent_id').references(() => agents.id, {
       onDelete: 'set null',
     }),
@@ -126,6 +128,7 @@ export const taskDependencies = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     // 'blocks' | 'relates'
     type: text('type').notNull().default('blocks'),
@@ -161,6 +164,7 @@ export const taskDocuments = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     // 'agent' | 'user' | 'system'
     pinnedBy: text('pinned_by').notNull().default('agent'),
@@ -191,6 +195,7 @@ export const taskTopics = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     seq: integer('seq').notNull(), // topic sequence within task (1, 2, 3...)
     operationId: text('operation_id'), // agent execution operation ID
@@ -234,6 +239,7 @@ export const briefs = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     // Source (polymorphic, fill as needed)
     taskId: text('task_id').references(() => tasks.id, { onDelete: 'cascade' }),
@@ -290,6 +296,7 @@ export const taskComments = pgTable(
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
       .notNull(),
+    workspaceId: text('workspace_id').references(() => workspaces.id, { onDelete: 'cascade' }),
 
     // Author (user or agent, both nullable)
     authorUserId: text('author_user_id').references(() => users.id, { onDelete: 'set null' }),
