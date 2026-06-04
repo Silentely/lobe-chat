@@ -1,4 +1,4 @@
-import { isNotNull } from 'drizzle-orm';
+import { isNotNull, sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import {
   boolean,
@@ -138,7 +138,11 @@ export const documents = pgTable(
     uniqueIndex('documents_client_id_user_id_unique').on(table.clientId, table.userId),
     uniqueIndex('documents_slug_user_id_unique')
       .on(table.slug, table.userId)
-      .where(isNotNull(table.slug)),
+      .where(sql`${table.workspaceId} IS NULL AND ${table.slug} IS NOT NULL`),
+    index('documents_workspace_id_idx').on(table.workspaceId),
+    uniqueIndex('documents_slug_workspace_id_unique')
+      .on(table.workspaceId, table.slug)
+      .where(isNotNull(table.workspaceId)),
   ],
 );
 
@@ -198,6 +202,7 @@ export const files = pgTable(
         table.clientId,
         table.userId,
       ),
+      workspaceIdIdx: index('files_workspace_id_idx').on(table.workspaceId),
     };
   },
 );
@@ -233,6 +238,7 @@ export const knowledgeBases = pgTable(
   (t) => [
     uniqueIndex('knowledge_bases_client_id_user_id_unique').on(t.clientId, t.userId),
     index('knowledge_bases_user_id_idx').on(t.userId),
+    index('knowledge_bases_workspace_id_idx').on(t.workspaceId),
   ],
 );
 
@@ -264,5 +270,6 @@ export const knowledgeBaseFiles = pgTable(
     index('knowledge_base_files_kb_id_idx').on(t.knowledgeBaseId),
     index('knowledge_base_files_user_id_idx').on(t.userId),
     index('knowledge_base_files_file_id_idx').on(t.fileId),
+    index('knowledge_base_files_workspace_id_idx').on(t.workspaceId),
   ],
 );
