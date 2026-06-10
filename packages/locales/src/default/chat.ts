@@ -20,6 +20,8 @@ export default {
   'agentBuilder.title': 'Agent Builder',
   'agentBuilder.welcome':
     'Tell me your use case.\n\nWriting, coding, or data analysis—anything works. You own the goal and standards; I’ll break it down into collaborative, runnable Agents.',
+  'agentConfigError.retry': 'Retry',
+  'agentConfigError.title': 'Failed to load agent settings',
   'agentDefaultMessage':
     'Hi, I’m **{{name}}**. One sentence is enough.\n\nWant me to match your workflow better? Go to [Agent Settings]({{url}}) and fill in the Agent Profile (you can edit it anytime).',
   'agentDefaultMessageWithSystemRole':
@@ -1109,6 +1111,7 @@ export default {
   'workingPanel.localFile.error': "Couldn't load this file",
   'workingPanel.localFile.preview.raw': 'Raw',
   'workingPanel.localFile.preview.render': 'Preview',
+  'workingPanel.localFile.preview.source': 'Source',
   'workingPanel.localFile.truncated': 'File preview truncated to {{limit}} characters',
   'workingPanel.skills.empty': 'No skills available',
   'workingPanel.skills.section.agent': 'Agent skills',
