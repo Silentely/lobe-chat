@@ -1412,6 +1412,11 @@ export class AiAgentService {
       agentConfig.chatConfig =
         resolveSubAgentChatConfig(agentConfig.chatConfig, chatConfigOverride) ??
         agentConfig.chatConfig;
+      // Keep the raw override so the LLM context hints can re-apply explicit
+      // sub-agent reasoning choices over the user's model-instance defaults —
+      // the merged chatConfig alone can't distinguish them from stale agent
+      // values, which the reasoning-config migration ignores.
+      agentConfig.subAgentChatConfigOverride = chatConfigOverride;
     }
 
     // Persistence-attribution agent id. Background Agent Signal runs (memory /
@@ -2434,6 +2439,7 @@ export class AiAgentService {
               agentType: heteroType,
               cwd: undefined,
               operationId,
+              platformAgentId: agentConfig.agencyConfig?.heterogeneousProvider?.platformAgentId,
               prompt,
               taskId: operationId,
               topicId,
