@@ -1,6 +1,0 @@
-version: "1"
-rules:
-  - base: main
-    upstream: lobehub:canary # change `wei` to the owner of upstream repo
-    mergeMethod: merge
-    mergeUnstable: true
