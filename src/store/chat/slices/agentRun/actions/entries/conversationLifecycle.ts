@@ -1,5 +1,6 @@
 // Disable the auto sort key eslint rule to make the code more logic and readable
 import { createCallAgentManifest } from '@lobechat/builtin-tool-agent-management';
+import { GoalIdentifier, isGoalPrompt } from '@lobechat/builtin-tool-goal';
 import { isDesktop, isHeterogeneousAgentModelId, LOADING_FLAT } from '@lobechat/const';
 import { formatSelectedSkillsContext, formatSelectedToolsContext } from '@lobechat/context-engine';
 import { isRemoteHeterogeneousType } from '@lobechat/heterogeneous-agents';
@@ -273,6 +274,12 @@ export class ConversationLifecycleActionImpl {
     const ownerAgentId = context.agentId;
     const selectedSkills = parseSelectedSkillsFromEditorData(editorData);
     const selectedTools = parseSelectedToolsFromEditorData(editorData);
+    if (
+      isGoalPrompt(message) &&
+      !selectedTools.some(({ identifier }) => identifier === GoalIdentifier)
+    ) {
+      selectedTools.push({ identifier: GoalIdentifier, name: 'Goal' });
+    }
     const mentionedAgents = parseMentionedAgentsFromEditorData(editorData);
 
     const localFileReferences = mergeLocalFileReferences(
@@ -606,7 +613,13 @@ export class ConversationLifecycleActionImpl {
     const messages = forceNewTopicFromExisting
       ? []
       : (inputMessages ?? displayMessageSelectors.getDisplayMessagesByKey(contextKey)(this.#get()));
-    const lastMessage = messages.at(-1);
+    // Historical callback/tool sibling forks are rendered with the recovered
+    // taskCallback card as supplemental history. It is not the active
+    // conversational tail: using it here lets findLastMessageId descend into
+    // the callback's inactive assistant branch, so the next user message is
+    // persisted there and disappears from the main flow after reconciliation.
+    const lastMessage =
+      messages.findLast((message) => message.role !== 'taskCallback') ?? messages.at(-1);
 
     useUserMemoryStore.getState().setActiveMemoryContext({
       agent: agentSelectors.getAgentMetaById(agentId)(getAgentStoreState()),
