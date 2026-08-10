@@ -106,6 +106,19 @@ interface QueryTopicParams {
   containerId?: string | null;
   current?: number;
   /**
+   * Restrict an `agentId` query to the builder conversations that configured
+   * one specific target (`metadata.editingAgentId` / `metadata.editingGroupId`).
+   *
+   * Builder panels run on a single builtin agent shared by every target, whose
+   * topics deliberately carry no `groupId` / `sessionId` — those columns mark a
+   * topic as part of the target's own chat read path. The builder panel itself
+   * shows the unfiltered history on purpose; these exist so a caller that wants
+   * one target's builds can ask for them. Only meaningful alongside `agentId`;
+   * ignored by the group / container branches.
+   */
+  editingAgentId?: string | null;
+  editingGroupId?: string | null;
+  /**
    * Exclude topics by status (e.g. ['completed'])
    */
   excludeStatuses?: string[];
@@ -277,6 +290,8 @@ export class TopicModel {
     agentId,
     containerId,
     current = 0,
+    editingAgentId,
+    editingGroupId,
     excludeStatuses,
     excludeTriggers,
     includeTriggers,
@@ -365,6 +380,14 @@ export class TopicModel {
             not(inArray(topics.status, excludeStatuses as ChatTopicStatus[])),
           )
         : undefined;
+    // Topics created before the marker existed carry neither key and therefore
+    // match no target — they cannot: what they configured was never recorded
+    // anywhere in the row. `topics_agent_id_idx` still drives the scan, so the
+    // unindexed JSONB comparison only runs over one agent's rows.
+    const editingTargetCondition = and(
+      editingAgentId ? sql`${topics.metadata}->>'editingAgentId' = ${editingAgentId}` : undefined,
+      editingGroupId ? sql`${topics.metadata}->>'editingGroupId' = ${editingGroupId}` : undefined,
+    );
 
     // If groupId is provided, query topics by groupId directly
     if (groupId) {
@@ -450,6 +473,7 @@ export class TopicModel {
       const agentWhere = and(
         this.ownership(),
         agentCondition,
+        editingTargetCondition,
         includeTriggerCondition,
         excludeTriggerCondition,
         triggerCondition,
@@ -745,6 +769,33 @@ export class TopicModel {
           ? `${row.lastAssistantMessage.slice(0, LAST_MESSAGE_PREVIEW_LENGTH)}…`
           : row.lastAssistantMessage,
     }));
+  };
+
+  /**
+   * Recent topics from the same IM channel, most-recent first. Matches the
+   * channel via the `metadata.bot.platformThreadId` path written at topic
+   * creation (see `ChatTopicBotContext`). Used to pre-inject cross-session
+   * history on platforms that can't read chat history at runtime (e.g. WeChat,
+   * whose `readMessages` throws), so a fresh topic still knows what the channel
+   * was just talking about.
+   */
+  findRecentByBotThread = async (
+    platformThreadId: string,
+    { limit = 3 }: { limit?: number } = {},
+  ): Promise<TopicItem[]> => {
+    if (!platformThreadId) return [];
+
+    return this.db
+      .select()
+      .from(topics)
+      .where(
+        and(
+          this.ownership(),
+          sql`${topics.metadata} -> 'bot' ->> 'platformThreadId' = ${platformThreadId}`,
+        ),
+      )
+      .orderBy(desc(topics.updatedAt))
+      .limit(limit);
   };
 
   queryByKeyword = async (
