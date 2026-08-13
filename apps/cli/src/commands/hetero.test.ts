@@ -104,23 +104,13 @@ describe('hetero exec command', () => {
     stdoutSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
     mockResolveHeteroSpawnCommand.mockReset();
     mockResolveHeteroSpawnCommand.mockImplementation(
-      async (agentType: LocalHeterogeneousAgentType, command?: string) => ({
-        command:
-          command ??
-          (agentType === 'amp'
-            ? 'amp'
-            : agentType === 'codex'
-              ? 'codex'
-              : agentType === 'opencode'
-                ? 'opencode'
-                : agentType === 'pi'
-                  ? 'pi'
-                  : agentType === 'qoder'
-                    ? 'qodercli'
-                    : agentType === 'codebuddy'
-                      ? 'codebuddy'
-                      : 'claude'),
-      }),
+      async (agentType: LocalHeterogeneousAgentType, command?: string) => {
+        const defaultCommand = HETEROGENEOUS_AGENT_CONFIGS.find(
+          ({ type }) => type === agentType,
+        )!.defaultCommand;
+
+        return { command: command ?? defaultCommand };
+      },
     );
     mockSpawnAgent.mockReset();
     mockHeteroIngestMutate.mockReset();
@@ -236,6 +226,33 @@ describe('hetero exec command', () => {
         agentType: 'qoder',
         command: 'qodercli',
         extraArgs: ['--model', 'Claude Sonnet 4.5', '--reasoning-effort', 'high'],
+        prompt: 'do thing',
+      }),
+    );
+  });
+
+  it('runs Kimi Code with its default command and forwards model but not effort', async () => {
+    mockSpawnAgent.mockReturnValue(createFakeHandle());
+
+    await runCmd([
+      'hetero',
+      'exec',
+      '--type',
+      'kimi-code',
+      '--prompt',
+      'do thing',
+      '--model',
+      'kimi-for-coding',
+      '--effort',
+      'high',
+    ]);
+
+    expect(mockResolveHeteroSpawnCommand).toHaveBeenCalledWith('kimi-code', undefined);
+    expect(mockSpawnAgent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        agentType: 'kimi-code',
+        command: 'kimi',
+        extraArgs: ['--model', 'kimi-for-coding'],
         prompt: 'do thing',
       }),
     );
@@ -427,6 +444,35 @@ describe('hetero exec command', () => {
         agentType: 'amp',
         command: 'amp',
         extraArgs: ['--mode', 'high'],
+      }),
+    );
+  });
+
+  it('runs Cursor with model, resume, and native args', async () => {
+    mockSpawnAgent.mockReturnValue(createFakeHandle());
+
+    await runCmd([
+      'hetero',
+      'exec',
+      '--type',
+      'cursor',
+      '--prompt',
+      'do thing',
+      '--resume',
+      'cursor-session',
+      '--model',
+      'sonnet-4-thinking',
+      '--agent-arg=--mode',
+      '--agent-arg=plan',
+    ]);
+
+    expect(mockResolveHeteroSpawnCommand).toHaveBeenCalledWith('cursor', undefined);
+    expect(mockSpawnAgent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        agentType: 'cursor',
+        command: 'agent',
+        extraArgs: ['--mode', 'plan', '--model', 'sonnet-4-thinking'],
+        resumeSessionId: 'cursor-session',
       }),
     );
   });

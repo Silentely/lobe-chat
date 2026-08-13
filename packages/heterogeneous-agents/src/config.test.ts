@@ -17,6 +17,8 @@ describe('heterogeneous agent config', () => {
       'claude-code',
       'codebuddy',
       'codex',
+      'cursor',
+      'kimi-code',
       'opencode',
       'pi',
       'qoder',
@@ -43,10 +45,21 @@ describe('heterogeneous agent config', () => {
       title: 'CodeBuddy',
       type: 'codebuddy',
     });
+    expect(getHeterogeneousAgentConfig('cursor')).toMatchObject({
+      defaultCommand: 'agent',
+      install: { commands: ['curl https://cursor.com/install -fsS | bash'] },
+      title: 'Cursor',
+      type: 'cursor',
+    });
     expect(getHeterogeneousAgentConfig('amp')).toMatchObject({
       defaultCommand: 'amp',
       title: 'Amp',
       type: 'amp',
+    });
+    expect(getHeterogeneousAgentConfig('kimi-code')).toMatchObject({
+      defaultCommand: 'kimi',
+      title: 'Kimi Code',
+      type: 'kimi-code',
     });
     expect(getHeterogeneousAgentConfig('opencode')).toMatchObject({
       defaultCommand: 'opencode',
@@ -83,6 +96,19 @@ describe('heterogeneous agent config', () => {
       docsUrl: 'https://ampcode.com/manual',
       message: 'Amp could not authenticate. Run `amp login` or configure AMP_API_KEY, then retry.',
     });
+    expect(isHeterogeneousAgentAuthRequired('kimi-code', 'No model configured')).toBe(true);
+    expect(buildHeterogeneousAgentAuthRequiredError({ agentType: 'kimi-code' })).toMatchObject({
+      agentType: 'kimi-code',
+      code: 'auth_required',
+      command: 'kimi',
+      message: 'Kimi Code could not authenticate. Run `kimi`, use `/login`, then retry.',
+    });
+    expect(isHeterogeneousAgentAuthRequired('cursor', 'Authentication required')).toBe(true);
+    expect(buildHeterogeneousAgentAuthRequiredError({ agentType: 'cursor' })).toMatchObject({
+      command: 'agent',
+      docsUrl: 'https://cursor.com/docs/cli/installation',
+      message: 'Cursor could not authenticate. Run `agent login`, then retry.',
+    });
   });
 
   it('derives display labels from the shared config source', () => {
@@ -91,7 +117,9 @@ describe('heterogeneous agent config', () => {
       'claude-code': 'Claude Code',
       'codebuddy': 'CodeBuddy',
       'codex': 'Codex',
+      'cursor': 'Cursor',
       'hermes': 'Hermes',
+      'kimi-code': 'Kimi Code',
       'openclaw': 'OpenClaw',
       'opencode': 'OpenCode',
       'pi': 'Pi',
