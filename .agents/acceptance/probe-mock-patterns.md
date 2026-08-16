@@ -64,6 +64,21 @@ HttpOnly, so an empty `document.cookie` does not establish signed-out state.
 
 ## Project-specific recipes
 
+### Structured generation through the local OpenAI-compatible stub
+
+**Situation:** a real product path uses non-streaming `chat/completions` for
+`generateObject`, while ordinary agent turns use streaming completions against the
+same local provider stub.
+
+**Doesn't work:** returning SSE chunks for every `chat/completions` request. The
+model runtime expects a normal `choices[0].message.content` response when
+`stream: false`, so the request reaches the stub but structured generation crashes
+before schema parsing.
+
+**Works:** branch on the request's `stream` field. Keep SSE for streaming turns and
+return a standard JSON chat completion for `stream: false`; set `STUB_TEXT` to the
+schema-valid JSON required by the check.
+
 ### Task CLI polling with seeded API-key auth
 
 **Situation:** A local acceptance run is driven through `lh task run` with the
@@ -79,6 +94,13 @@ identifier to its internal subject id.
 query the aggregate with `lh acceptance view task:<internal-task-id>`. The start
 response and task activity expose the operation and topic ids; the Acceptance
 bundle exposes the repair round and final rollup.
+
+The same identifier/internal-id gap exists on the WRITE path: a local
+`acceptance run ingest --subject task:T-N` stores the literal `T-N` as
+`acceptance_subjects.subject_id`, while task/goal detail pages resolve the
+acceptance by the task's INTERNAL id — the page then renders an empty state even
+though ingest succeeded. Use the internal id in `--subject` (or fix the
+`subject_id` row afterwards) when the evidence must render in the local app UI.
 
 ### Message-attached heterogeneous-agent errors
 
@@ -595,6 +617,15 @@ agent-browser --session "$RUN_SESSION" \
 
 Then assert `get url` and `app-probe.sh auth` on that exact session before
 capturing evidence.
+
+A cross-wired session can also look perfectly healthy while running STALE code:
+if the other instance's Vite has since died, the browser keeps serving its last
+bundle from disk cache — every probe answers, `innerText` is full, and only the
+rendered copy (an old i18n string, a pre-change label) betrays it. Before any
+assertion about working-tree code, read `location.origin` AND the page's script
+`src` origins, and require both to match the ports this run's `test-env.sh` /
+`.records/runtime` resolved. A dead script origin that still renders = disk
+cache, not your build.
 
 ### Agent-browser navigation hangs after an orphaned Next child keeps the port
 
