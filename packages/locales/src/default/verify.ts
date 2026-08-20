@@ -307,6 +307,10 @@ export default {
   'acceptance.workspace.filters.noSearchResults': 'No acceptances match “{{query}}”.',
   'acceptance.workspace.filters.showAll': 'Show all acceptances',
   'acceptance.workspace.filters.title': 'Filter acceptances',
+  'acceptance.workspace.groups.ungrouped': 'Ungrouped',
+  'acceptance.workspace.groups.actions': 'Project actions',
+  'acceptance.workspace.groups.createProject': 'Create project',
+  'acceptance.workspace.groups.viewProject': 'View project',
   'acceptance.workspace.listEmpty':
     'Ingest a verification report with the CLI and its acceptance will show up here.',
   'acceptance.workspace.listEmptyTitle': 'No acceptances yet',
@@ -317,6 +321,7 @@ export default {
   'acceptance.workspace.statusSuccess': 'Status updated',
   'acceptance.workspace.title': 'Deliveries',
   'actions.backToApp': 'Back to {{name}}',
+  'actions.goToApp': 'Go to {{name}}',
   'meta.description': 'Verification runs, delivery reports, and acceptance reviews.',
   'actions.cancel': 'Cancel',
   'actions.delete': 'Delete',
