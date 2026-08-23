@@ -21,6 +21,7 @@ import {
   type SuperGrokKeyVault,
   type VertexAIKeyVault,
 } from '@lobechat/types';
+import { isCodexServerDefaultCustomModel } from '@lobechat/types';
 import { safeParseJSON } from '@lobechat/utils';
 import { type AiFullModelCard, ModelProvider } from 'model-bank';
 import { AiProviderBaseURLSchema } from 'model-bank/aiProvider';
@@ -541,16 +542,17 @@ export type ServerDefaultHeterogeneousModels = Record<
  *
  * Claude Code reaches the relay through the Anthropic Messages ingress, which
  * translates the wire protocol in both directions rather than proxying it
- * (`normalizeAnthropicRequest` / `encodeAnthropicStream`). The CLI never names
- * the upstream model — it always sends the `lobehub-default` alias and the real
- * model comes from the operation token — so the upstream only has to be able to
- * call tools. Any tool-capable chat model in the relay catalog qualifies; the
- * `parseClaudeModelId` arm keeps Claude ids eligible in deployments whose
- * catalog omits `abilities`.
+ * (`normalizeAnthropicRequest` / `encodeAnthropicStream`). Both CLIs address
+ * the relay as `lobehub/${catalogId}`; the operation token is still the source
+ * of truth and the request must match that selection. The upstream only has to
+ * be able to call tools. Any tool-capable chat model in the relay catalog
+ * qualifies; the `parseClaudeModelId` arm keeps Claude ids eligible in
+ * deployments whose catalog omits `abilities`.
  *
- * Codex stays pinned to models that natively speak OpenAI Responses: the CLI
- * branches its own reasoning/continuation behaviour on the model id, so a
- * namespaced third-party id lands in an unverified default path.
+ * Codex accepts native Responses models plus an explicit set of tool-capable
+ * relay models configured through its custom model-catalog path. Keep that set
+ * narrow: the CLI branches reasoning and continuation behaviour on model
+ * metadata, so function calling alone is not enough to establish compatibility.
  */
 const supportsServerDefaultHeterogeneousAgent = (
   agentType: ServerDefaultHeterogeneousAgentType,
@@ -558,7 +560,8 @@ const supportsServerDefaultHeterogeneousAgent = (
 ) =>
   agentType === 'claude-code'
     ? parseClaudeModelId(model.id) !== undefined || model.abilities?.functionCall === true
-    : isResponsesAPIModel(model.id);
+    : isResponsesAPIModel(model.id) ||
+      (isCodexServerDefaultCustomModel(model.id) && model.abilities?.functionCall === true);
 
 const getEnabledServerChatModels = async (provider: ModelProvider) => {
   const providerConfig = (await getServerGlobalConfig()).aiProvider[provider];
@@ -622,7 +625,11 @@ export const resolveServerDefaultHeterogeneousModel = async (
     throw new Error('The selected server model is not compatible with this heterogeneous agent');
   }
 
-  return toServerModelSelection(ModelProvider.LobeHub, modelConfig);
+  return {
+    ...toServerModelSelection(ModelProvider.LobeHub, modelConfig),
+    supportsAdaptiveThinking:
+      modelConfig.settings?.extendParams?.includes('enableAdaptiveThinking') === true,
+  };
 };
 
 /**
