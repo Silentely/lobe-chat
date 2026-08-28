@@ -2451,6 +2451,7 @@ export default {
   'workingPanel.localFile.preview.raw': 'Raw',
   'workingPanel.localFile.sandboxUnavailable':
     'This file is no longer available — its sandbox environment has been recycled',
+  'workingPanel.localFile.preview.openExternal': 'Open in browser',
   'workingPanel.localFile.preview.reload': 'Reload preview',
   'workingPanel.localFile.preview.render': 'Preview',
   'workingPanel.localFile.preview.source': 'Source',
@@ -2471,6 +2472,8 @@ export default {
   'workingPanel.localFile.publish.upload_one': '1 larger file will be uploaded with the page.',
   'workingPanel.localFile.publish.upload_other':
     '{{count}} larger files will be uploaded with the page.',
+  'workingPanel.localFile.publish.uploadingProgress':
+    'Uploading {{completed}} / {{total}} · {{percent}}%',
   'workingPanel.localFile.publish.missing': 'Missing files will not be included: {{list}}',
   'workingPanel.localFile.publish.noLocalFiles': 'This page has no local files besides the HTML.',
   'workingPanel.localFile.publish.noTopic': 'Open a topic to publish this page',
