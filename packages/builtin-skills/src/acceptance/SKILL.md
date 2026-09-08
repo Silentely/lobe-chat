@@ -1,6 +1,6 @@
 ---
 name: acceptance
-version: 0.4.0
+version: 0.4.1
 description: >
   End-to-end verification and self-evidence for a delivery in any repository,
   with or without a preconfigured verify plan. Discover an existing plan when
@@ -25,19 +25,35 @@ marks it `uncertain` and holds the delivery.
 author (or discover) the plan  →  pick the surface  →  capture evidence  →  publish the round  →  self-check coverage
 ```
 
-## Independent tester review
+## Independent acceptance review (first round only)
 
 The primary checks the environment, writes the plan, executes cases, inspects
-evidence, repairs failures, and publishes. Use one tester agent at two points:
-review requirement coverage before execution, then independently inspect the
-completed evidence before declaring acceptance complete. Reuse the tester when
-the host supports it; do not delegate execution or require per-case approval.
+evidence, repairs failures, and publishes. Use one `acceptance-checker` agent at two points
+in the first acceptance round: give at most two feedback responses on the plan and cases
+before execution, then perform exactly one quick report/evidence check against
+the agreed criteria before publishing. A second plan check is optional, only
+to check the primary's revisions; there is no third plan-feedback response.
+Count the two stages separately. After
+either stage's limit, the primary owns remaining corrections and verification.
+The acceptance-checker **is** the plan gate — never ask the user to approve a
+plan; ask the user only for a user-owned prerequisite or a product decision
+that changes the plan. In both stages, the primary supplies an explicit file
+list and the relevant diff text or prepared diff artifact paths. The acceptance-checker
+limits code reading to these materials; it must not run `git diff` or discover
+its own scope. This does not restrict inspection of the plan, report, or evidence.
+During evidence review, use it only to identify the updates and the agreed
+cases whose evidence needs checking; the core task is checking the report
+against the plan and artifacts. Do not reopen requirements, expand into code
+review, or investigate implementation details. Return contradictions to the
+primary for explanation or repair. Follow-up rounds have no acceptance-checker: the primary
+re-runs, inspects, and publishes itself. Do not delegate execution or require
+per-case approval.
 
-Read [tester-review.md](references/tester-review.md) for the input/output contract,
-review boundaries, and repair follow-up. Tester review supplements the primary's
-own checks and any configured verifier; it does not replace either. If delegation
-or required media inspection is unavailable, disclose the missing review and
-unverified claims rather than claiming independent acceptance.
+Read [acceptance-checker.md](references/acceptance-checker.md) for the input/output
+contract, review boundaries, and follow-up rules. Acceptance review supplements the
+primary's own checks and any configured verifier; it does not replace either.
+If delegation or required media inspection is unavailable, disclose the missing
+review and unverified claims rather than claiming independent acceptance.
 
 ## Read the project layer first
 
@@ -46,7 +62,7 @@ Before touching an environment, check for `.agents/acceptance/`:
 | File                     | What it owns                                                 |
 | ------------------------ | ------------------------------------------------------------ |
 | `PROJECT.md`             | Start/stop commands, ports, services, auth, surfaces, probes |
-| `PROCESS.md`             | The run process: approval gate, execution rules, teardown    |
+| `PROCESS.md`             | The run process: plan gate, execution rules, teardown        |
 | `common-mistakes.md`     | Project living log — what earlier rounds got wrong here      |
 | `probe-mock-patterns.md` | Project living log — how to force state on this product      |
 
@@ -102,8 +118,8 @@ substitute a private agent plugin.
 
 ## Optional user-journey flows
 
-When acceptance depends on a sequence of user states, publish its graph before
-exercising the product. Keep the checklist paths above for independent checks;
+When acceptance depends on a sequence of user states, publish its graph during
+planning, before implementation or verification begins. Keep the checklist paths above for independent checks;
 a graph is optional and does not replace evidence or human review.
 
 1. Use the named acceptance (or create one with `lh acceptance create --help`).
@@ -118,25 +134,33 @@ a graph is optional and does not replace evidence or human review.
    definition and returns `flowId`. To edit it, include that `flowId` and the
    current `expectedHash` in the file. `lh acceptance flow view <acceptanceId>`
    reads definitions, snapshots and results. Publishing does not execute checks.
-3. `lh acceptance flow start <acceptanceId> --flow <flowId>` creates a round
+3. `lh acceptance flow plan <acceptanceId> --flow <flowId>` creates a draft round
    with a frozen graph and plan. Add `--run <verifyRunId>` to attach another flow
    to the same open round. Read `lh acceptance run get <verifyRunId> --json` for
    the actual plan IDs: each branch and subflow invocation has its own
    `checkItemId`; never substitute the reusable asset ID.
-4. Exercise the real product, then use
+4. Share the acceptance link so the user can inspect the proposed nodes, branches
+   and expected outcomes before implementation. Read and address any actionable
+   feedback. Preparing a plan neither executes checks nor approves delivery;
+   there is no separate flow-confirmation action. Continue within the user's
+   authorized scope, or pause if the user explicitly asked to review before work.
+   For requested changes, publish the revised definition and prepare a new draft
+   round in the same acceptance.
+5. Implement the work and exercise the real product, then use
    `lh acceptance flow record <acceptanceId> --file result.json`, containing
    `verifyRunId`, `checkItemId`, `verdict` (`passed`, `failed`, `uncertain`, or
    `blocked`) and `observation`. Record only what was observed. Use the returned
    result ID to attach required artifacts through `lh acceptance run evidence`
    (inspect its `--help`), following the same evidence rules as checklist checks.
-5. After all required checks are recorded and passed, run
+6. After all required checks are recorded and passed, run
    `lh acceptance flow complete <acceptanceId> --run <verifyRunId>`. Completion
    settles verification; it does not accept the delivery on the user's behalf.
    Read back the round and verify evidence coverage before handing it over.
 
-To rerun the exact old graph, start with `--from-run <sourceVerifyRunId>` and
+To rerun the exact old graph, prepare a plan with `--from-run <sourceVerifyRunId>` and
 omit `--run` for a fresh round. This preserves the old definition and starts
-without results. Accepted or closed acceptances must be explicitly reopened
+without results. Each replay starts as an unexecuted draft. Accepted or closed
+acceptances must be explicitly reopened
 before starting. Edges describe business transitions; they do not automatically
 schedule execution. Continue to read `lh acceptance feedback <acceptanceId> --actionable` before repairs and publish new rounds into the same acceptance.
 
@@ -254,8 +278,8 @@ simctl io` over host-window capture. Rounds land under `.acceptances/`, which
 
 ## Reference map
 
-For both tester handoffs and review output, read
-[tester-review.md](references/tester-review.md).
+For both acceptance-checker handoffs and review output, read
+[acceptance-checker.md](references/acceptance-checker.md).
 
 | Need                                           | Reference                                                                                                                                                                               |
 | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
