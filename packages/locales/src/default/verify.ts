@@ -184,6 +184,9 @@ export default {
   'acceptance.comments.title': 'Discussion',
   'acceptance.comments.moreActions': 'More actions',
   'acceptance.comments.placeholder': 'Say something about this delivery…',
+  'acceptance.comments.removeOthers': 'Remove',
+  'acceptance.comments.removeOthersConfirm':
+    "Remove someone else's comment? It disappears from the discussion.",
   'acceptance.comments.replyPlaceholder': 'Reply…',
   'acceptance.comments.send': 'Send',
   'acceptance.comments.reply': 'Reply',
@@ -239,6 +242,7 @@ export default {
   'acceptance.comments.author.former': 'Former member',
   'acceptance.comments.author.deactivated': 'Deactivated',
   'acceptance.comments.loadFailed': 'Failed to load the discussion. Please refresh.',
+  'acceptance.comments.copyLinkHint': '{{time}} · click to copy this comment’s link',
   'acceptance.comments.createFailed': 'Failed to post the comment. Please try again.',
   'acceptance.comments.deleteFailed': 'Failed to delete the comment. Please try again.',
   'acceptance.comments.updateFailed': 'Failed to update the comment. Please try again.',
