@@ -1,3 +1,4 @@
+import { LayersEnum } from '@lobechat/types';
 import {
   and,
   eq,
@@ -26,10 +27,14 @@ import {
   userMemories,
 } from '../../../schemas';
 import type { LobeChatDatabase } from '../../../type';
+import { notAgentShareDocument } from '../../../utils/documentVisibility';
 import { libraryVisibleFile, notAgentShareFileReference } from '../../../utils/fileVisibility';
 import { normalizeInboxAgentMeta, normalizeInboxAgentTitle } from '../../../utils/inboxAgent';
+import { visibleMemoryState } from '../../../utils/memoryVisibility';
 import { searchableMessage } from '../../../utils/searchableMessage';
 import { notShareVisitorMessage, notShareVisitorTopic } from '../../../utils/shareVisitor';
+import { notTrashed } from '../../../utils/softDelete';
+import { notChannelTopic, notChannelTopicRef } from '../../../utils/topicVisibility';
 import { buildWorkspaceWhere } from '../../../utils/workspace';
 import type {
   FtsSearchAgentResult,
@@ -111,6 +116,10 @@ export const hydrateUserMemories = async (
           hits.map(({ id }) => id),
         ),
         eq(userMemories.userId, scope.userId),
+        // Experience memory is retired and has no page to land on; keep it out of unified search.
+        ne(userMemories.memoryLayer, LayersEnum.Experience),
+        notTrashed(userMemories.isDeleted),
+        visibleMemoryState(userMemories.state),
       ),
     );
 
@@ -276,6 +285,7 @@ export const hydrateTopics = async (
         // from a candidate id to real content, so filtering agent-share visitor
         // topics here is enough to keep them out of the creator's results.
         notShareVisitorTopic(),
+        notChannelTopic(),
         agentId ? eq(topics.agentId, agentId) : undefined,
         visibleParent(topics.agentId, agents.id),
         visibleParent(topics.groupId, chatGroups.id),
@@ -381,6 +391,7 @@ export const hydrateMessages = async (
         searchableMessage(),
         // Twin of the topics guard in `hydrateTopics`.
         notShareVisitorMessage(),
+        notChannelTopicRef(messages.topicId),
         agentId ? eq(messages.agentId, agentId) : undefined,
         visibleParent(messages.agentId, agents.id),
         visibleParent(messages.groupId, chatGroups.id),
@@ -612,6 +623,7 @@ export const hydratePages = async (
         ),
         buildWorkspaceWhere(scope, documents),
         eq(documents.fileType, 'custom/document'),
+        notAgentShareDocument(documents.metadata),
         notAgentShareFileReference(db, documents.fileId),
       ),
     );
@@ -668,6 +680,7 @@ export const hydrateKnowledgeBaseDocuments = async (
         ),
         buildWorkspaceWhere(scope, documents),
         ne(documents.fileType, DOCUMENT_FOLDER_TYPE),
+        notAgentShareDocument(documents.metadata),
         notAgentShareFileReference(db, documents.fileId),
       ),
     );
@@ -703,6 +716,7 @@ export const hydrateKnowledgeBaseDocuments = async (
             and(
               inArray(documents.id, selectedDocumentIds),
               buildWorkspaceWhere(scope, documents),
+              notAgentShareDocument(documents.metadata),
               notAgentShareFileReference(db, documents.fileId),
             ),
           );

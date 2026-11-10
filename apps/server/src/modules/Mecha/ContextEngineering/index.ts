@@ -1,5 +1,8 @@
-import { type ContextSnapshot, runContextEngineering } from '@lobechat/mecha';
-import { type OpenAIChatMessage } from '@lobechat/types';
+import {
+  type ContextEngineeringResult,
+  type ContextSnapshot,
+  runContextEngineering,
+} from '@lobechat/mecha';
 
 import { type ServerMessagesEngineParams } from './types';
 
@@ -16,13 +19,16 @@ export const toContextSnapshot = ({
   agentGroup,
   agentIdentity,
   agentManagementContext,
+  attachmentPreviewFileIds,
   botPlatformContext,
   capabilities,
   connectorOwnershipNote,
   discordContext,
+  documentReferences,
   enableAgentMode,
   enableExpertise,
   enableHistoryCount,
+  enableStaleToolResultTrim,
   evalContext,
   expertise,
   forceFinish,
@@ -38,7 +44,6 @@ export const toContextSnapshot = ({
   modelDisplayName,
   modelKnowledgeCutoff,
   onboardingContext,
-  pageContentContext,
   planTodo,
   projectInstructions,
   provider,
@@ -54,6 +59,7 @@ export const toContextSnapshot = ({
   agent: {
     documents: agentDocuments,
     enableHistoryCount,
+    enableStaleToolResultTrim,
     historyCount,
     identity: agentIdentity,
     inputTemplate,
@@ -61,7 +67,7 @@ export const toContextSnapshot = ({
     systemRole,
   },
   // Server-side file access URLs resolve to stable file-proxy URLs in production.
-  fileContext: { enabled: true, includeFileUrl: true },
+  fileContext: { enabled: true, includeFileUrl: true, previewFileIds: attachmentPreviewFileIds },
   model: {
     capabilities: {
       isCanUseAudio: capabilities?.isCanUseAudio,
@@ -88,9 +94,9 @@ export const toContextSnapshot = ({
   step: {
     agentBuilderContext,
     agentManagementContext,
+    documentReferences,
     groupAgentBuilderContext,
     onboardingContext,
-    pageContentContext,
     planTodo,
     topicReferences,
     workspaceContext,
@@ -123,10 +129,14 @@ export const toContextSnapshot = ({
  * Unlike the frontend version, it receives all data as parameters instead of
  * fetching from stores, shapes them into a {@link ContextSnapshot} and runs the
  * shared context engineering core.
+ *
+ * Returns the pipeline metadata alongside the messages: processors record
+ * per-request decisions there (trim stats, cache-warmth gates, truncation
+ * counts), and the agent-runtime trace recorder persists them per step.
  */
 export const serverMessagesEngine = async (
   params: ServerMessagesEngineParams,
-): Promise<OpenAIChatMessage[]> => runContextEngineering(toContextSnapshot(params));
+): Promise<ContextEngineeringResult> => runContextEngineering(toContextSnapshot(params));
 
 // Re-export types
 export type {

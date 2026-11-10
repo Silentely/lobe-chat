@@ -2,6 +2,7 @@ import type { SQLWrapper } from 'drizzle-orm';
 import { and, desc, eq, inArray, isNull, ne, notInArray, or, sql } from 'drizzle-orm';
 
 import { DOCUMENT_FOLDER_TYPE, documents, knowledgeBaseFiles } from '../../../schemas';
+import { notAgentShareDocument } from '../../../utils/documentVisibility';
 import { notAgentShareFileReference } from '../../../utils/fileVisibility';
 import { buildWorkspaceWhere } from '../../../utils/workspace';
 import type {
@@ -9,10 +10,12 @@ import type {
   FtsSearchFolderResult,
   FtsSearchKnowledgeBaseDocumentHit,
   FtsSearchPageResult,
+  FtsSearchTimeRange,
 } from '../types';
 import type { PostgresFtsSearchContext } from './context';
 import type { PostgresFtsSearchField } from './dialect';
 import { buildResponse, truncate } from './results';
+import { timeRangeWhere } from './timeRange';
 
 const FOLDER_FIELDS: PostgresFtsSearchField[] = [
   { column: documents.title, weight: 4 },
@@ -50,6 +53,7 @@ export async function searchFolders(
       filename: documents.filename,
       id: documents.id,
       knowledgeBaseId: documents.knowledgeBaseId,
+      metadata: documents.metadata,
       score: score.as('score'),
       slug: documents.slug,
       title: documents.title,
@@ -85,6 +89,7 @@ export async function searchFolders(
     .where(
       and(
         context.liftedScopeWhere(hits.workspaceId),
+        notAgentShareDocument(hits.metadata),
         context.liftsExclusionFilter ? excludeKb(hits.knowledgeBaseId) : undefined,
       ),
     )
@@ -113,6 +118,7 @@ export async function searchPages(
   query: string,
   limit: number,
   excludeKbIds?: string[],
+  timeRange?: FtsSearchTimeRange,
 ): Promise<FtsSearchBackendResponse<FtsSearchPageResult>> {
   const { db, dialect } = context;
   const preparedQuery = dialect.prepare(query);
@@ -143,6 +149,7 @@ export async function searchPages(
       filename: documents.filename,
       id: documents.id,
       knowledgeBaseId: documents.knowledgeBaseId,
+      metadata: documents.metadata,
       score: score.as('score'),
       title: documents.title,
       updatedAt: documents.updatedAt,
@@ -156,6 +163,7 @@ export async function searchPages(
         context.liftsExclusionFilter
           ? undefined
           : excludeKb(documents.knowledgeBaseId, documents.fileId),
+        timeRangeWhere(documents, timeRange),
         dialect.match(PAGE_FIELDS, preparedQuery),
       ),
     )
@@ -176,6 +184,7 @@ export async function searchPages(
     .where(
       and(
         context.liftedScopeWhere(hits.workspaceId),
+        notAgentShareDocument(hits.metadata),
         notAgentShareFileReference(db, hits.fileId),
         context.liftsExclusionFilter ? excludeKb(hits.knowledgeBaseId, hits.fileId) : undefined,
       ),
@@ -221,14 +230,15 @@ export async function searchKnowledgeBaseDocuments(
   const folderClause = ne(documents.fileType, DOCUMENT_FOLDER_TYPE);
   const userClause = buildWorkspaceWhere(context.scope, documents);
 
-  const inlineRowsPromise = db
+  const inlineHits = db
     .select({
       content: documents.content,
       fileId: documents.fileId,
       filename: documents.filename,
       id: documents.id,
       knowledgeBaseId: documents.knowledgeBaseId,
-      score,
+      metadata: documents.metadata,
+      score: score.as('score'),
       title: documents.title,
       updatedAt: documents.updatedAt,
     })
@@ -243,16 +253,34 @@ export async function searchKnowledgeBaseDocuments(
       ),
     )
     .orderBy(sql`${score} DESC`)
+    .limit(context.scanCandidateLimit(limit))
+    .as('inline_hits');
+
+  const inlineRowsPromise = db
+    .select({
+      content: inlineHits.content,
+      fileId: inlineHits.fileId,
+      filename: inlineHits.filename,
+      id: inlineHits.id,
+      knowledgeBaseId: inlineHits.knowledgeBaseId,
+      score: inlineHits.score,
+      title: inlineHits.title,
+      updatedAt: inlineHits.updatedAt,
+    })
+    .from(inlineHits)
+    .where(notAgentShareDocument(inlineHits.metadata))
+    .orderBy(desc(inlineHits.score))
     .limit(limit);
 
-  const fileBackedRowsPromise = db
+  const fileBackedHits = db
     .select({
       content: documents.content,
       fileId: documents.fileId,
       filename: documents.filename,
       id: documents.id,
       knowledgeBaseId: knowledgeBaseFiles.knowledgeBaseId,
-      score,
+      metadata: documents.metadata,
+      score: score.as('score'),
       title: documents.title,
       updatedAt: documents.updatedAt,
     })
@@ -269,6 +297,23 @@ export async function searchKnowledgeBaseDocuments(
       and(userClause, folderClause, notAgentShareFileReference(db, documents.fileId), matchClause),
     )
     .orderBy(sql`${score} DESC`)
+    .limit(context.scanCandidateLimit(limit))
+    .as('file_backed_hits');
+
+  const fileBackedRowsPromise = db
+    .select({
+      content: fileBackedHits.content,
+      fileId: fileBackedHits.fileId,
+      filename: fileBackedHits.filename,
+      id: fileBackedHits.id,
+      knowledgeBaseId: fileBackedHits.knowledgeBaseId,
+      score: fileBackedHits.score,
+      title: fileBackedHits.title,
+      updatedAt: fileBackedHits.updatedAt,
+    })
+    .from(fileBackedHits)
+    .where(notAgentShareDocument(fileBackedHits.metadata))
+    .orderBy(desc(fileBackedHits.score))
     .limit(limit);
 
   const [inlineRows, fileBackedRows] = await Promise.all([

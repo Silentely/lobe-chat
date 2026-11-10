@@ -983,6 +983,77 @@ describe('userRouter', () => {
     });
   });
 
+  describe('updateToolChannels', () => {
+    it('delegates to the atomic model patch with the raw input', async () => {
+      const replaceToolChannelsSetting = vi.fn().mockResolvedValue({ rowCount: 1 });
+      vi.mocked(UserModel).mockImplementation(function () {
+        return { replaceToolChannelsSetting } as any;
+      });
+
+      await userRouter
+        .createCaller({ ...mockCtx })
+        .updateToolChannels({ searchProviders: ['exa', 'searxng'] });
+
+      expect(replaceToolChannelsSetting).toHaveBeenCalledWith({
+        searchProviders: ['exa', 'searxng'],
+      });
+    });
+
+    it('rejects workspace members without content permission', async () => {
+      const { RbacModel } = await import('@/database/models/rbac');
+      vi.mocked(RbacModel).mockImplementation(function () {
+        return { hasAnyPermission: vi.fn().mockResolvedValue(false) } as any;
+      });
+
+      await expect(
+        userRouter
+          .createCaller({ ...mockCtx, workspaceId: 'ws_1' } as any)
+          .updateToolChannels({ crawlerImpls: ['jina'] }),
+      ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    });
+  });
+
+  describe('updatePersonalSystemAgent', () => {
+    it('patches only the given entry inside a workspace without a permission check', async () => {
+      const { RbacModel } = await import('@/database/models/rbac');
+      const hasPermission = vi.fn().mockResolvedValue(false);
+      vi.mocked(RbacModel).mockImplementation(function () {
+        return { hasAnyPermission: hasPermission, hasPermission } as any;
+      });
+      const mergeSystemAgentItemSetting = vi.fn().mockResolvedValue({ rowCount: 1 });
+      vi.mocked(UserModel).mockImplementation(function () {
+        return { mergeSystemAgentItemSetting } as any;
+      });
+
+      await userRouter
+        .createCaller({ ...mockCtx, workspaceId: 'ws_1' } as any)
+        .updatePersonalSystemAgent({ key: 'followUpAction', value: { enabled: false } });
+
+      expect(hasPermission).not.toHaveBeenCalled();
+      expect(mergeSystemAgentItemSetting).toHaveBeenCalledWith('followUpAction', {
+        enabled: false,
+      });
+    });
+
+    it('rejects workspace-governed service-model keys', async () => {
+      await expect(
+        userRouter.createCaller({ ...mockCtx }).updatePersonalSystemAgent({
+          key: 'topic' as any,
+          value: { model: 'gpt-4o', provider: 'openai' },
+        }),
+      ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+    });
+
+    it('rejects fields beyond the switch and the model choice', async () => {
+      await expect(
+        userRouter.createCaller({ ...mockCtx }).updatePersonalSystemAgent({
+          key: 'inputCompletion',
+          value: { customPrompt: 'x' } as any,
+        }),
+      ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+    });
+  });
+
   describe('updateToolIntervention', () => {
     it('delegates to the atomic model merge with the raw input', async () => {
       const mergeToolInterventionSetting = vi.fn().mockResolvedValue({ rowCount: 1 });

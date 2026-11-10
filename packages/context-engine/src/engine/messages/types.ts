@@ -1,10 +1,5 @@
 /* eslint-disable perfectionist/sort-interfaces */
-import type {
-  AgentIdentityContext,
-  FileContent,
-  KnowledgeBaseInfo,
-  PageContentContext,
-} from '@lobechat/prompts';
+import type { AgentIdentityContext, FileContent, KnowledgeBaseInfo } from '@lobechat/prompts';
 import type {
   ExpertiseContextSnapshot,
   RuntimeAdditionalContextFragment,
@@ -22,6 +17,7 @@ import type { AgentContextDocument } from '../../providers/AgentDocumentInjector
 import type { AgentManagementContext } from '../../providers/AgentManagementContextInjector';
 import type { BotPlatformContext } from '../../providers/BotPlatformContextInjector';
 import type { DiscordContext } from '../../providers/DiscordContextProvider';
+import type { DocumentReferenceItem } from '../../providers/DocumentReferenceContextInjector';
 import type { EvalContext } from '../../providers/EvalContextSystemInjector';
 import type { GroupAgentBuilderContext } from '../../providers/GroupAgentBuilderContextInjector';
 import type { GroupMemberInfo } from '../../providers/GroupContextInjector';
@@ -101,6 +97,11 @@ export interface FileContextConfig {
   enabled: boolean;
   /** Whether to include file URLs (desktop typically uses false) */
   includeFileUrl: boolean;
+  /**
+   * Attachments sent as a preview plus file id because the request's attachment
+   * budget is spent (see `planAttachmentPreviews`).
+   */
+  previewFileIds?: string[];
 }
 
 /**
@@ -209,6 +210,8 @@ export interface AgentGroupConfig {
 export interface PlanTodoConfig {
   /** Whether plan/todo context injection is enabled */
   enabled?: boolean;
+  /** Whether to inject the current todos into this LLM call */
+  injectTodos?: boolean;
   /** The current plan to inject (injected before first user message) */
   plan?: Plan;
   /** The current todo list to inject (injected at end of last user message) */
@@ -247,6 +250,11 @@ export interface MessagesEngineParams {
   enableAgentMode?: boolean;
   /** Whether to enable history message count limit */
   enableHistoryCount?: boolean;
+  /**
+   * Whether stale tool results are replaced with short placeholders in the
+   * model context. Undefined / true → trimming enabled (default).
+   */
+  enableStaleToolResultTrim?: boolean;
   /** Whether to inject the operation expertise snapshot */
   enableExpertise?: boolean;
   /** Force finish flag: when true, injects summary prompt for max-steps completion */
@@ -343,17 +351,16 @@ export interface MessagesEngineParams {
   /** Topic reference summaries to inject into last user message */
   topicReferences?: TopicReferenceItem[];
 
+  // ========== Document References ==========
+  /** Agent documents referenced via `<refer_document>`, injected into last user message */
+  documentReferences?: DocumentReferenceItem[];
+
   // ========== Page Editor context ==========
   /**
    * Initial context captured at operation start (frontend runtime usage)
    * Contains static state like initial page content that doesn't change during execution
    */
   initialContext?: RuntimeInitialContext;
-  /**
-   * Page content context for direct injection (server-side usage)
-   * When provided, takes precedence over initialContext/stepContext
-   */
-  pageContentContext?: PageContentContext;
   /**
    * Step context computed at the beginning of each step (frontend runtime usage)
    * Contains dynamic state like latest XML that changes between steps
@@ -387,6 +394,7 @@ export { type AgentBuilderContext } from '../../providers/AgentBuilderContextInj
 export { type AgentManagementContext } from '../../providers/AgentManagementContextInjector';
 export { type BotPlatformContext } from '../../providers/BotPlatformContextInjector';
 export { type DiscordContext } from '../../providers/DiscordContextProvider';
+export { type DocumentReferenceItem } from '../../providers/DocumentReferenceContextInjector';
 export { type EvalContext } from '../../providers/EvalContextSystemInjector';
 export { type GroupAgentBuilderContext } from '../../providers/GroupAgentBuilderContextInjector';
 export { type Plan } from '../../providers/PlanInjector';

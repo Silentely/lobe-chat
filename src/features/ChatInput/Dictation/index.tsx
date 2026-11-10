@@ -1,8 +1,7 @@
 'use client';
 
-import { Icon, Tooltip } from '@lobehub/ui';
-import { createStaticStyles } from 'antd-style';
-import { LoaderCircle, Mic, RotateCcw, X } from 'lucide-react';
+import { createStaticStyles, Spin, Tooltip } from '@lobehub/ui';
+import { Mic, RotateCcw, X } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { memo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +13,7 @@ import { useChatInputStore, useStoreApi } from '../store';
 import { isOtherAudioInputModeActive } from './mutualExclusion';
 import { getDictationControlMode } from './presentation';
 import { useDictationControlFocus } from './useDictationControlFocus';
+import { useDictationPrefetch } from './useDictationPrefetch';
 import { useRealtimeDictation } from './useRealtimeDictation';
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
@@ -84,19 +84,6 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
 
     clip: rect(0, 0, 0, 0);
   `,
-  spin: css`
-    animation: dictation-spin 1s linear infinite;
-
-    @keyframes dictation-spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: none;
-    }
-  `,
   status: css`
     overflow: hidden;
 
@@ -123,6 +110,7 @@ const Dictation = memo(() => {
       s.setActiveAudioInputMode,
     ]);
   const { client, errorCode, retryable, status } = useRealtimeDictation(editor);
+  const prefetch = useDictationPrefetch(client, enabled && !mobile);
   const active = status !== 'idle' || activeAudioInputMode === 'dictation';
   const controlMode = getDictationControlMode(status);
   const otherAudioModeActive = isOtherAudioInputModeActive(activeAudioInputMode, 'dictation');
@@ -237,7 +225,10 @@ const Dictation = memo(() => {
         ref={actionRef}
         title={t('voiceDictation.action')}
         onClick={handleStart}
+        onFocus={prefetch}
         onKeyDown={(event) => handleKeyboardActivation(event, start)}
+        onPointerDown={prefetch}
+        onPointerEnter={prefetch}
       />
     );
   }
@@ -320,9 +311,10 @@ const Dictation = memo(() => {
             title={t('voiceDictation.retry')}
             onClick={handleStart}
             onKeyDown={(event) => handleKeyboardActivation(event, start)}
+            onPointerDown={prefetch}
           />
         ) : status !== 'error' ? (
-          <Icon aria-hidden className={styles.spin} icon={LoaderCircle} size={18} />
+          <Spin aria-hidden size="small" />
         ) : null}
       </div>
       <ChatInputAction

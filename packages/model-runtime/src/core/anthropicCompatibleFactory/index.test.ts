@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ModelRuntimeDiagnostics } from '../../types/providerDiagnostics';
 import { ContextExceededPreFlightError } from '../../utils/resolveSafeMaxTokens';
 import {
+  buildDefaultAnthropicPayload,
   createAnthropicCompatibleParams,
   createAnthropicCompatibleRuntime,
   createDefaultAnthropicClient,
@@ -334,6 +335,51 @@ describe('createAnthropicCompatibleRuntime', () => {
     expect(createClient.mock.calls[0][0]).not.toHaveProperty('modelIdMapping');
   });
 
+  it('reports usage through onFinal in JSON response mode and returns the raw message', async () => {
+    const message = {
+      content: [{ text: 'Hello', type: 'text' }],
+      id: 'msg_json',
+      model: 'test-model',
+      role: 'assistant',
+      stop_reason: 'end_turn',
+      stop_sequence: null,
+      type: 'message',
+      usage: { cache_read_input_tokens: 100, input_tokens: 11, output_tokens: 7 },
+    };
+    const Runtime = createAnthropicCompatibleRuntime({
+      chatCompletion: {
+        handlePayload: (payload) => ({ max_tokens: 1024, messages: [], model: payload.model }),
+      },
+      customClient: {
+        createClient: () =>
+          ({
+            baseURL: 'https://api.example.com/anthropic',
+            messages: { create: vi.fn().mockResolvedValue(message) },
+          }) as unknown as Anthropic,
+      },
+      provider: 'test-provider',
+    });
+    const onFinal = vi.fn();
+
+    const response = await new Runtime({ apiKey: 'test-key' }).chat(
+      {
+        messages: [{ content: 'hi', role: 'user' }],
+        model: 'test-model',
+        responseMode: 'json',
+        stream: false,
+      } as any,
+      { callback: { onFinal } },
+    );
+
+    expect(await response.json()).toEqual(message);
+    expect(onFinal).toHaveBeenCalledTimes(1);
+    expect(onFinal.mock.calls[0][0].usage).toMatchObject({
+      inputCachedTokens: 100,
+      totalInputTokens: 111,
+      totalOutputTokens: 7,
+    });
+  });
+
   it('should classify provider balance errors without a custom error handler', async () => {
     const messagesCreate = vi.fn().mockRejectedValue({
       error: {
@@ -583,6 +629,155 @@ describe('createAnthropicCompatibleRuntime', () => {
     );
   });
 
+  it('should keep streaming when a thinking block starts without a signature', async () => {
+    // Aihubmix omits `signature` on thinking `content_block_start`; Anthropic sends ''.
+    const rawEvents = [
+      {
+        message: {
+          content: [],
+          id: 'msg_missing_signature',
+          model: 'claude-opus-5-5',
+          role: 'assistant',
+          stop_reason: null,
+          stop_sequence: null,
+          type: 'message',
+          usage: { input_tokens: 12, output_tokens: 0 },
+        },
+        type: 'message_start',
+      },
+      {
+        content_block: { thinking: '', type: 'thinking' },
+        index: 0,
+        type: 'content_block_start',
+      },
+      {
+        delta: { thinking: 'Plan', type: 'thinking_delta' },
+        index: 0,
+        type: 'content_block_delta',
+      },
+      { index: 0, type: 'content_block_stop' },
+      {
+        content_block: { text: '', type: 'text' },
+        index: 1,
+        type: 'content_block_start',
+      },
+      {
+        delta: { text: 'Final answer', type: 'text_delta' },
+        index: 1,
+        type: 'content_block_delta',
+      },
+      { index: 1, type: 'content_block_stop' },
+      {
+        delta: { stop_reason: 'end_turn', stop_sequence: null },
+        type: 'message_delta',
+        usage: { input_tokens: 12, output_tokens: 8 },
+      },
+      { type: 'message_stop' },
+    ] as unknown as Anthropic.MessageStreamEvent[];
+    const rawStream = {
+      async *[Symbol.asyncIterator]() {
+        for (const event of rawEvents) yield event;
+      },
+    };
+    const messagesCreate = vi.fn(() => ({
+      withResponse: vi.fn().mockResolvedValue({ data: rawStream }),
+    }));
+    const Runtime = createAnthropicCompatibleRuntime({
+      chatCompletion: {
+        handlePayload: (payload) => ({
+          max_tokens: 1024,
+          messages: [{ content: 'Question', role: 'user' }],
+          model: payload.model,
+        }),
+      },
+      customClient: {
+        createClient: () =>
+          ({
+            baseURL: 'https://aihubmix.com',
+            messages: { create: messagesCreate },
+          }) as unknown as Anthropic,
+      },
+      provider: 'test-provider',
+    });
+    const runtime = new Runtime({ apiKey: 'test-key' });
+    const diagnostics: ModelRuntimeDiagnostics = {};
+
+    const response = await runtime.chat(
+      {
+        messages: [{ content: 'Question', role: 'user' }],
+        model: 'claude-opus-5-5',
+        stream: true,
+      },
+      { diagnostics },
+    );
+
+    await expect(response.text()).resolves.toContain('Final answer');
+    expect(diagnostics.providerResponse?.error).toBeUndefined();
+    expect(diagnostics.providerResponse).toEqual(
+      expect.objectContaining({
+        eventCount: rawEvents.length,
+        hasNonWhitespaceText: true,
+        hasNonWhitespaceThinking: true,
+        signatureChars: 0,
+        stopReason: 'end_turn',
+        terminalEventReceived: true,
+        textChars: 'Final answer'.length,
+        thinkingChars: 'Plan'.length,
+      }),
+    );
+  });
+
+  it('should keep the real output tokens when replaying a non-stream response as a stream', async () => {
+    const messagesCreate = vi.fn().mockResolvedValue({
+      content: [{ text: 'Answer', type: 'text' }],
+      id: 'msg_non_stream',
+      model: 'custom-model',
+      role: 'assistant',
+      stop_reason: 'end_turn',
+      stop_sequence: null,
+      type: 'message',
+      usage: { cache_read_input_tokens: 300, input_tokens: 12, output_tokens: 42 },
+    });
+    const Runtime = createAnthropicCompatibleRuntime({
+      chatCompletion: {
+        handlePayload: (payload) => ({
+          max_tokens: 1024,
+          messages: [{ content: 'Question', role: 'user' }],
+          model: payload.model,
+        }),
+      },
+      customClient: {
+        createClient: () =>
+          ({
+            baseURL: 'https://example.com/anthropic',
+            messages: { create: messagesCreate },
+          }) as unknown as Anthropic,
+      },
+      provider: 'test-provider',
+    });
+    const runtime = new Runtime({ apiKey: 'test-key' });
+
+    const response = await runtime.chat({
+      messages: [{ content: 'Question', role: 'user' }],
+      model: 'custom-model',
+      stream: false,
+    });
+    const text = await response.text();
+    const usageLine = text
+      .split('\n\n')
+      .find((event) => event.includes('event: usage'))
+      ?.split('\n')
+      .find((line) => line.startsWith('data: '));
+
+    expect(JSON.parse(usageLine!.slice('data: '.length))).toMatchObject({
+      inputCacheMissTokens: 12,
+      inputCachedTokens: 300,
+      totalInputTokens: 312,
+      totalOutputTokens: 42,
+      totalTokens: 354,
+    });
+  });
+
   it('should strip trailing assistant prefill when a logical id maps to a Claude 5 model', async () => {
     // The prefill strip inside handlePayload sees the logical id; when the
     // mapping only later resolves to a Claude 4.6+/5 upstream id, chat() must
@@ -627,6 +822,41 @@ describe('createAnthropicCompatibleRuntime', () => {
       }),
       expect.anything(),
     );
+  });
+
+  it('should omit disabled thinking when the mapped model always thinks', async () => {
+    // handlePayload resolves thinking by the logical id: Sonnet 5 accepts `disabled`, but a
+    // channel redirect to Sonnet 5.5 rejects it with a 400, so chat() must re-check the sent model.
+    const messagesCreate = vi.fn().mockResolvedValue({ content: [] });
+    const Runtime = createAnthropicCompatibleRuntime({
+      chatCompletion: {
+        handlePayload: buildDefaultAnthropicPayload,
+      },
+      customClient: {
+        createClient: () =>
+          ({
+            baseURL: 'https://aihubmix.com',
+            messages: { create: messagesCreate },
+          }) as unknown as Anthropic,
+      },
+      provider: 'test-provider',
+    });
+    const runtime = new Runtime({
+      apiKey: 'test-key',
+      modelIdMapping: { 'claude-sonnet-5': 'claude-sonnet-5-5' },
+    });
+
+    await runtime.chat({
+      messages: [{ content: 'hi', role: 'user' }],
+      model: 'claude-sonnet-5',
+      responseMode: 'json',
+      stream: false,
+      thinking: { type: 'disabled' },
+    } as any);
+
+    const request = messagesCreate.mock.calls[0][0];
+    expect(request.model).toBe('claude-sonnet-5-5');
+    expect(request).not.toHaveProperty('thinking');
   });
 
   it('should keep logical model for generateObject and pass mapped id as request config', async () => {

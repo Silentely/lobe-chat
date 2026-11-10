@@ -41,6 +41,7 @@ export const buildMessagesEngineParams = (snapshot: ContextSnapshot): MessagesEn
     agentDocuments: agent.documents,
     agentIdentity: agent.identity,
     enableHistoryCount: agent.enableHistoryCount,
+    enableStaleToolResultTrim: agent.enableStaleToolResultTrim,
     historyCount: agent.historyCount,
     inputTemplate: agent.inputTemplate,
     knowledge: agent.knowledge,
@@ -91,10 +92,10 @@ export const buildMessagesEngineParams = (snapshot: ContextSnapshot): MessagesEn
       agentManagementContext: step?.agentManagementContext,
       groupAgentBuilderContext: step?.groupAgentBuilderContext,
       onboardingContext: step?.onboardingContext,
-      pageContentContext: step?.pageContentContext,
       planTodo: step?.planTodo,
       workspaceContext: step?.workspaceContext,
     }),
     ...(step?.topicReferences?.length && { topicReferences: step.topicReferences }),
+    ...(step?.documentReferences?.length && { documentReferences: step.documentReferences }),
   };
 };

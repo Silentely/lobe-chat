@@ -50,6 +50,11 @@ export interface ToolRuleRequest {
   /** The run's effective execution target, resolved by the host. */
   executionTarget: DeviceExecutionTarget;
   hasEnabledKnowledgeBases?: boolean;
+  /**
+   * An attached or agent-assigned file is too long to inline and is sent as a preview; the
+   * attachments tool is enabled so the model can read the rest with `readAttachment`.
+   */
+  hasOversizedFiles?: boolean;
   isBotConversation?: boolean;
   /** Verified against the persisted roster, never a client claim. */
   isGroupSupervisor?: boolean;
@@ -67,6 +72,8 @@ export interface ToolRuleRequest {
     /** The model produces images natively, so the fallback tool is never offered. */
     hasImageOutput?: boolean;
   };
+  /** The page agent edits the open page through the conversation sandbox. */
+  pageScope?: boolean;
   /**
    * Plugin identifiers the runtime resolved beyond the agent's own (sub-agent,
    * group or page scope); enabled like pinned plugins in agent mode.

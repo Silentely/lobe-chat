@@ -5,6 +5,7 @@ import type {
   AgentManagementContext,
   BotPlatformContext,
   DiscordContext,
+  DocumentReferenceItem,
   EvalContext,
   FileContextConfig,
   GroupAgentBuilderContext,
@@ -20,7 +21,7 @@ import type {
   UserMemoryConfig,
   WorkspaceContext,
 } from '@lobechat/context-engine';
-import type { AgentIdentityContext, PageContentContext } from '@lobechat/prompts';
+import type { AgentIdentityContext } from '@lobechat/prompts';
 import type {
   ExpertiseContextSnapshot,
   RuntimeAdditionalContextFragment,
@@ -43,6 +44,8 @@ export interface ContextAgentSnapshot {
   /** Agent documents the agent may consult. */
   documents?: AgentContextDocument[];
   enableHistoryCount?: boolean;
+  /** Undefined / true → stale tool results are trimmed (default). */
+  enableStaleToolResultTrim?: boolean;
   historyCount?: number;
   /** Identity shown to the model so it introduces itself by the user-given name. */
   identity?: AgentIdentityContext;
@@ -128,9 +131,9 @@ export interface ContextWorldSnapshot {
 export interface ContextStepSnapshot {
   agentBuilderContext?: AgentBuilderContext;
   agentManagementContext?: AgentManagementContext;
+  documentReferences?: DocumentReferenceItem[];
   groupAgentBuilderContext?: GroupAgentBuilderContext;
   onboardingContext?: OnboardingContext;
-  pageContentContext?: PageContentContext;
   planTodo?: PlanTodoConfig;
   topicReferences?: TopicReferenceItem[];
   workspaceContext?: WorkspaceContext;

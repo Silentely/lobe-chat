@@ -1,10 +1,13 @@
 'use client';
 
-import { SiDiscord, SiGithub, SiRss, SiX, SiYoutube } from '@icons-pack/react-simple-icons';
+import SiDiscord from '@icons-pack/react-simple-icons/icons/SiDiscord';
+import SiGithub from '@icons-pack/react-simple-icons/icons/SiGithub';
+import SiRss from '@icons-pack/react-simple-icons/icons/SiRss';
+import SiX from '@icons-pack/react-simple-icons/icons/SiX';
+import SiYoutube from '@icons-pack/react-simple-icons/icons/SiYoutube';
 import { BRANDING_EMAIL, BRANDING_NAME, SOCIAL_URL } from '@lobechat/business-const';
-import { Flexbox, Form } from '@lobehub/ui';
-import { Divider } from 'antd';
-import { createStaticStyles } from 'antd-style';
+import { createStaticStyles, Divider, Flexbox } from '@lobehub/ui';
+import { Form } from '@lobehub/ui/form';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -29,7 +32,6 @@ const About = memo<{ mobile?: boolean }>(({ mobile }) => {
   return (
     <Form.Group
       collapsible={false}
-      gap={16}
       style={{ maxWidth: '1024px', width: '100%' }}
       title={`${t('about')} ${BRANDING_NAME}`}
       variant={'filled'}

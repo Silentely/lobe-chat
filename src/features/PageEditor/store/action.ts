@@ -1,10 +1,11 @@
 import { EDITOR_DEBOUNCE_TIME, EDITOR_MAX_WAIT, isDesktop } from '@lobechat/const';
-import { confirmModal, toast } from '@lobehub/ui/base-ui';
+import { confirmModal, toast } from '@lobehub/ui';
 import debug from 'debug';
 import { debounce } from 'es-toolkit/compat';
 import { type StateCreator } from 'zustand';
 
 import { type EditLockHealth } from '@/features/EditLock';
+import { focusEditorStartLine } from '@/features/EditorCanvas/focusEditorStartLine';
 import { useDocumentStore } from '@/store/document';
 import { getElectronStoreState } from '@/store/electron';
 import { electronSyncSelectors } from '@/store/electron/selectors';
@@ -19,7 +20,11 @@ export interface Action {
   flushMetaSave: () => void;
   handleCopyLink: (t: (key: string) => string) => void;
   handleDelete: (t: (key: string) => string, onDeleteCallback?: () => void) => Promise<void>;
-  handleTitleSubmit: () => Promise<void>;
+  /**
+   * Enter in the title: save it and continue on the body's first line. `bodyText`
+   * is the part of the title after the caret, which becomes that first line.
+   */
+  handleTitleSubmit: (bodyText?: string) => Promise<void>;
   initMeta: (title?: string, emoji?: string) => void;
   performMetaSave: () => Promise<void>;
   setCommentsPanelOpen: (open: boolean) => void;
@@ -52,6 +57,14 @@ export interface Action {
   setPendingCommentAnchor: (pending: PendingCommentAnchor | undefined) => void;
   setRightPanelMode: (mode: RightPanelMode) => void;
   setTitle: (title: string) => void;
+  /**
+   * Adopt title/emoji pushed from the outside (document list refresh, sidebar
+   * rename, realtime sync) — but only while the local meta is clean and idle.
+   * While the user is typing, or a save is in flight, the local value wins;
+   * otherwise a list refresh echoing the *previous* save would clobber the
+   * characters typed since the last save.
+   */
+  syncMeta: (title?: string, emoji?: string) => void;
   triggerDebouncedMetaSave: () => void;
 }
 
@@ -127,12 +140,14 @@ export const store: (initState?: Partial<State>) => StateCreator<Store> =
         });
       },
 
-      handleTitleSubmit: async () => {
+      handleTitleSubmit: async (bodyText) => {
         const { editor, flushMetaSave } = get();
 
-        // Flush pending save and focus editor
+        // Flush the pending title save, then continue on a fresh first line of
+        // the body (AFFiNE's doc title does the same). A bare `editor.focus()`
+        // would restore the body's last caret — often the end of a long page.
         flushMetaSave();
-        editor?.focus();
+        focusEditorStartLine(editor, bodyText);
       },
 
       initMeta: (title, emoji) => {
@@ -174,10 +189,11 @@ export const store: (initState?: Partial<State>) => StateCreator<Store> =
               emoji,
               title,
             },
-            { saveSource: 'autosave' },
+            { metadataOnly: true, saveSource: 'autosave' },
           );
 
-          // Notify parent after successful save
+          // Notify parent after successful save. The callbacks were captured
+          // with the request, so they still address the document that was saved.
           if (title !== lastSavedTitle) {
             onTitleChange?.(title || '');
           }
@@ -185,15 +201,32 @@ export const store: (initState?: Partial<State>) => StateCreator<Store> =
             onEmojiChange?.(emoji);
           }
 
+          // The store outlives a document switch (see `setDocumentId`). If the
+          // editor moved on to another document while this request was in
+          // flight, the meta below belongs to that document: comparing it with
+          // the saved values would mark it dirty, record the previous
+          // document's title as its last-saved one and queue a save of it.
+          const { title: currentTitle, emoji: currentEmoji, documentId: currentDocumentId } = get();
+          if (currentDocumentId !== documentId) return;
+
+          // The user may have kept typing while the request was in flight, so
+          // re-derive dirtiness from the *current* meta instead of clearing it
+          // blindly — otherwise those trailing edits would never be persisted.
+          const stillDirty = currentTitle !== title || currentEmoji !== emoji;
+
           set({
-            isMetaDirty: false,
+            isMetaDirty: stillDirty,
             lastSavedEmoji: emoji,
             lastSavedTitle: title,
             metaSaveStatus: 'saved',
           });
+
+          if (stillDirty) {
+            get().triggerDebouncedMetaSave();
+          }
         } catch (error) {
           console.error('[PageEditor] Failed to save meta:', error);
-          set({ metaSaveStatus: 'idle' });
+          if (get().documentId === documentId) set({ metaSaveStatus: 'idle' });
         }
       },
 
@@ -272,6 +305,21 @@ export const store: (initState?: Partial<State>) => StateCreator<Store> =
         if (isDirty) {
           triggerDebouncedMetaSave();
         }
+      },
+
+      syncMeta: (title, emoji) => {
+        const { isMetaDirty, metaSaveStatus, lastSavedTitle, lastSavedEmoji } = get();
+
+        if (isMetaDirty || metaSaveStatus === 'saving') return;
+        if (title === lastSavedTitle && emoji === lastSavedEmoji) return;
+
+        set({
+          emoji,
+          isMetaDirty: false,
+          lastSavedEmoji: emoji,
+          lastSavedTitle: title,
+          title,
+        });
       },
 
       triggerDebouncedMetaSave: () => {

@@ -1,12 +1,19 @@
-import { Flexbox, Icon, Tooltip } from '@lobehub/ui';
-import { ActionIcon, Tag } from '@lobehub/ui/base-ui';
-import { Progress } from 'antd';
-import { createStaticStyles, cssVar } from 'antd-style';
+import {
+  ActionIcon,
+  createStaticStyles,
+  cssVar,
+  Flexbox,
+  Icon,
+  Progress,
+  Tag,
+  Tooltip,
+} from '@lobehub/ui';
 import { CircleAlertIcon, CircleCheckIcon, Loader2Icon, RotateCwIcon } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FileUploadErrorActions } from '@/business/client/features/FileUploadErrorActions';
+import { useChatInputUploadKey } from '@/features/ChatInput/hooks/useChatInputUpload';
 import { useEventCallback } from '@/hooks/useEventCallback';
 import { useFileStore } from '@/store/file';
 import { type UploadFileItem } from '@/types/files/upload';
@@ -55,6 +62,11 @@ const styles = createStaticStyles(({ css }) => ({
 
     line-height: 0;
   `,
+  // Tooltips are unselectable by default; the error carries the request id a
+  // user copies into a support report.
+  errorText: css`
+    user-select: text;
+  `,
   name: css`
     overflow: hidden;
     flex: 1;
@@ -72,6 +84,7 @@ type FileItemProps = UploadFileItem;
 const ContextItem = memo<FileItemProps>((props) => {
   const { error, errorCode, file, id, status, tasks, uploadState } = props;
   const { t } = useTranslation(['chat', 'common']);
+  const contextKey = useChatInputUploadKey();
   const removeChatUploadFile = useFileStore((s) => s.removeChatUploadFile);
   const retryChatUploadFile = useFileStore((s) => s.retryChatUploadFile);
   const { busy, canPreview, canRetry, indicator, progress } = getUploadChipState(props);
@@ -83,7 +96,7 @@ const ContextItem = memo<FileItemProps>((props) => {
     if (canPreview) void openFilePreviewModal(props);
   });
   const handleClose = useEventCallback(() => {
-    void removeChatUploadFile(id);
+    if (contextKey) void removeChatUploadFile(contextKey, id);
   });
 
   const detail = (
@@ -94,7 +107,7 @@ const ContextItem = memo<FileItemProps>((props) => {
           <Flexbox align={'center'} justify={'center'} style={{ height: '1lh' }}>
             <Icon icon={CircleAlertIcon} size={12} />
           </Flexbox>
-          <span>{error}</span>
+          <span className={styles.errorText}>{error}</span>
         </Flexbox>
       ) : (
         <UploadDetail size={file.size} status={status} tasks={tasks} uploadState={uploadState} />
@@ -149,11 +162,10 @@ const ContextItem = memo<FileItemProps>((props) => {
                   role={'progressbar'}
                 >
                   <Progress
-                    percent={progress}
+                    percent={progress ?? 0}
                     showInfo={false}
                     size={12}
                     status={'normal'}
-                    strokeWidth={12}
                     type={'circle'}
                   />
                 </span>
@@ -175,7 +187,7 @@ const ContextItem = memo<FileItemProps>((props) => {
               size={{ blockSize: 24, size: 12 }}
               title={t('retry', { ns: 'common' })}
               onClick={() => {
-                void retryChatUploadFile(id);
+                if (contextKey) void retryChatUploadFile(contextKey, id);
               }}
             />
           )}

@@ -55,8 +55,10 @@ export const getDefaultReasonDetail = (finalState: any, reason?: string): string
  *   it (e.g. `execSubAgent.onComplete`) receive the full state
  *   via the local `HookContext` channel, not via the stream.
  * - `operationToolSet`, `toolManifestMap`, `toolSourceMap`, `tools`
- *   — operation-level snapshot; back-compat copies of one struct.
- * - `expertise` — immutable operation-level snapshot retained in working state.
+ *   — operation-level snapshot; the four top-level names are the legacy
+ *   mirrors of the slot, kept here for operations that still carry them.
+ * - `world.expertise` — immutable operation-level snapshot retained in working
+ *   state. The rest of `world` stays: the client renders from it.
  *
  * Mirrors the `done`-event strip in `OperationTraceRecorder.appendStep`;
  * keep the two lists in sync if either set changes.
@@ -72,9 +74,15 @@ const stripStateForStream = <T extends Record<string, any>>(
     toolManifestMap: _toolManifestMap,
     toolSourceMap: _toolSourceMap,
     tools: _tools,
+    world,
     ...rest
   } = state;
-  return rest as T;
+  // `world` had to be destructured to reach its expertise snapshot, so it must be
+  // put back: everything else on it (agent, group, channel …) has to survive.
+  if (!world || typeof world !== 'object') return rest as T;
+  if (!('expertise' in world)) return { ...rest, world } as unknown as T;
+  const { expertise: _worldExpertise, ...worldRest } = world as Record<string, unknown>;
+  return { ...rest, world: worldRest } as unknown as T;
 };
 
 /**
@@ -121,6 +129,13 @@ export interface StreamEvent {
   type: AgentStreamEventType;
 }
 
+export interface StreamHistoryPage {
+  available: boolean;
+  events: StreamEvent[];
+  hasMore: boolean;
+  nextCursor: string;
+}
+
 export interface StreamChunkData {
   chunkType:
     | 'text'
@@ -142,8 +157,27 @@ export interface StreamChunkData {
   reasoning?: string;
   /** Multimodal reasoning parts (text + images) */
   reasoningParts?: Array<{ text: string; type: 'text' } | { image: string; type: 'image' }>;
+  /** Relayed LLM attempt this chunk re-publishes; the executor client skips its own echo. */
+  relayCallId?: string;
   toolsCalling?: ChatToolPayload[];
 }
+
+/** Decode one Redis stream entry (`[id, [field, value, ...]]`) into a `StreamEvent`. */
+const parseStreamEntry = (id: string, fields: string[]): StreamEvent => {
+  const eventData: any = {};
+  for (let i = 0; i < fields.length; i += 2) {
+    const key = fields[i];
+    const value = fields[i + 1];
+    if (key === 'data') {
+      eventData[key] = JSON.parse(value);
+    } else if (key === 'stepIndex' || key === 'timestamp') {
+      eventData[key] = parseInt(value);
+    } else {
+      eventData[key] = value;
+    }
+  }
+  return { ...eventData, id } as StreamEvent;
+};
 
 export class StreamEventManager {
   private redis: Redis;
@@ -206,9 +240,8 @@ export class StreamEventManager {
       const xaddStart = Date.now();
       const eventId = await this.redis.xadd(
         streamKey,
-        'MAXLEN',
-        '~',
-        '1000', // Limit stream length to prevent memory overflow
+        // Retain every event until the stream's inactivity TTL expires.
+        // Count trimming makes a reconnect silently lose earlier output.
         '*', // Auto-generate ID
         'type',
         eventData.type,
@@ -340,26 +373,7 @@ export class StreamEventManager {
             const events: StreamEvent[] = [];
 
             for (const [id, fields] of messages) {
-              const eventData: any = {};
-
-              // Parse Redis Stream fields
-              for (let i = 0; i < fields.length; i += 2) {
-                const key = fields[i];
-                const value = fields[i + 1];
-
-                if (key === 'data') {
-                  eventData[key] = JSON.parse(value);
-                } else if (key === 'stepIndex' || key === 'timestamp') {
-                  eventData[key] = parseInt(value);
-                } else {
-                  eventData[key] = value;
-                }
-              }
-
-              events.push({
-                ...eventData,
-                id, // Redis Stream event ID
-              } as StreamEvent);
+              events.push(parseStreamEntry(id, fields));
 
               currentLastId = id;
             }
@@ -442,19 +456,7 @@ export class StreamEventManager {
     let currentLastId = fromId;
 
     for (const [id, fields] of messages) {
-      const eventData: any = {};
-      for (let i = 0; i < fields.length; i += 2) {
-        const key = fields[i];
-        const value = fields[i + 1];
-        if (key === 'data') {
-          eventData[key] = JSON.parse(value);
-        } else if (key === 'stepIndex' || key === 'timestamp') {
-          eventData[key] = parseInt(value);
-        } else {
-          eventData[key] = value;
-        }
-      }
-      events.push({ ...eventData, id } as StreamEvent);
+      events.push(parseStreamEntry(id, fields));
       currentLastId = id;
     }
 
@@ -470,28 +472,41 @@ export class StreamEventManager {
     try {
       const results = await this.redis.xrevrange(streamKey, '+', '-', 'COUNT', count);
 
-      return results.map(([id, fields]) => {
-        const eventData: any = { id };
-
-        for (let i = 0; i < fields.length; i += 2) {
-          const key = fields[i];
-          const value = fields[i + 1];
-
-          if (key === 'data') {
-            eventData[key] = JSON.parse(value);
-          } else if (key === 'stepIndex' || key === 'timestamp') {
-            eventData[key] = parseInt(value);
-          } else {
-            eventData[key] = value;
-          }
-        }
-
-        return eventData as StreamEvent;
-      });
+      return results.map(([id, fields]) => parseStreamEntry(id, fields));
     } catch (error) {
       console.error('[StreamEventManager] Failed to get stream history:', error);
       return [];
     }
+  }
+
+  /** Forward, exclusive-cursor replay; never substitute a truncated suffix for full history. */
+  async getStreamHistoryPage(
+    operationId: string,
+    cursor = '0',
+    limit = 200,
+  ): Promise<StreamHistoryPage> {
+    const key = `${this.STREAM_PREFIX}:${operationId}`;
+    const unavailable = { available: false, events: [], hasMore: false, nextCursor: cursor };
+    if (cursor !== '0') {
+      const previous = await this.redis.xrange(key, cursor, cursor, 'COUNT', 1);
+      if (previous.length === 0) return unavailable;
+    }
+    const rows = await this.redis.xrange(
+      key,
+      cursor === '0' ? '-' : `(${cursor}`,
+      '+',
+      'COUNT',
+      limit + 1,
+    );
+    const events = rows.slice(0, limit).map(([id, fields]) => parseStreamEntry(id, fields));
+    // Legacy streams may already have been trimmed before this deployment.
+    if (cursor === '0' && events[0]?.type !== 'agent_runtime_init') return unavailable;
+    return {
+      available: true,
+      events,
+      hasMore: rows.length > limit,
+      nextCursor: events.at(-1)?.id ?? cursor,
+    };
   }
 
   /**
